@@ -43,7 +43,7 @@ import "@ionic/react/css/display.css";
 
 /* Theme variables */
 import "./../theme/variables.css";
-import { useHistory  } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 /* Notes 
   // ! means that the code will never be ran unless the object is valid
@@ -52,7 +52,7 @@ import { useHistory  } from "react-router-dom";
 */
 
 const Login: React.FC = (props) => {
-    let history = useHistory();
+  let history = useHistory();
 
   // states
   const [connected_status, set_connected_status] = useState<string>();
@@ -65,8 +65,7 @@ const Login: React.FC = (props) => {
 
   // website
   var login_url = "https://ziadabdelati.com/check.php?uname=";
-  var weather_url =
-    "http://api.weatherapi.com/v1/current.json?key=7640a167775a47be9a842820212111&q=35.8461766,-86.3773987&aqi=no";
+  
 
   const http_get = (URL: string) => {
     return axios({
@@ -93,7 +92,8 @@ const Login: React.FC = (props) => {
       if (response == 240) {
         console.log("correct data sent, redirecting");
         set_logged_in("");
-        history.push('/tab1');
+        //history.push('./TabManager');
+        history.replace("./TabManager");
       } else {
         console.log("incorrect pass");
         set_logged_in("Failed to log in!");
@@ -118,8 +118,8 @@ const Login: React.FC = (props) => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar color="primary">
-          <IonTitle>First Application</IonTitle>
+        <IonToolbar color="primary" className="title-th">
+          <IonTitle>Smart Home</IonTitle>
         </IonToolbar>
       </IonHeader>
 

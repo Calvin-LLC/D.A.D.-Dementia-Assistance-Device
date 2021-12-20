@@ -23,7 +23,7 @@ import {
   IonPage,
 } from "@ionic/react";
 
-import { arrowForwardOutline, banOutline } from "ionicons/icons";
+import { arrowForwardOutline, eyeOutline, eyeOffOutline, banOutline } from "ionicons/icons";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -57,6 +57,8 @@ const Login: React.FC = (props) => {
   // states
   const [connected_status, set_connected_status] = useState<string>();
   const [logged_in, set_logged_in] = useState<string>();
+  const [show_pass, set_show_pass] = useState<boolean>();
+  const [pass_shown, set_pass_shown] = useState<string>();
   const [error, set_error] = useState<string>();
 
   // refs
@@ -64,7 +66,7 @@ const Login: React.FC = (props) => {
   const password_ref = useRef<HTMLIonInputElement>(null);
 
   // website
-  var login_url = "https://ziadabdelati.com/check.php?uname=";
+  var login_url = "https://ziadabdelati.com/check.php?email=";
   
 
   const http_get = (URL: string) => {
@@ -115,6 +117,12 @@ const Login: React.FC = (props) => {
     set_error("");
   };
 
+  const toggle_pass = () => {
+    set_show_pass(!show_pass);
+    set_pass_shown(show_pass ? "text" : "password");
+  }
+
+
   return (
     <IonPage>
       <IonHeader>
@@ -128,8 +136,8 @@ const Login: React.FC = (props) => {
           <IonRow>
             <IonCol>
               <IonItem>
-                <IonLabel position="floating">Username</IonLabel>
-                <IonInput ref={username_ref}></IonInput>
+                <IonLabel position="floating">Email</IonLabel>
+                <IonInput clearInput={true} type="email" ref={username_ref}></IonInput>
               </IonItem>
             </IonCol>
           </IonRow>
@@ -138,7 +146,13 @@ const Login: React.FC = (props) => {
             <IonCol>
               <IonItem>
                 <IonLabel position="floating">Password</IonLabel>
-                <IonInput ref={password_ref}></IonInput>
+                <IonInput clearOnEdit={false} type="text" ref={password_ref}></IonInput>
+                {show_pass && (
+                <IonIcon onClick={toggle_pass} slot="end" icon={eyeOutline}/>
+                )}
+                {!show_pass && (
+                <IonIcon onClick={toggle_pass} slot="end" icon={eyeOffOutline}/>
+                )}
               </IonItem>
               {logged_in && (
                 <IonText>

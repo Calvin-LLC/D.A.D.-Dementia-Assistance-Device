@@ -1,6 +1,11 @@
 {
 	"appId": "io.ionic.starter",
-	"appName": "solve for tomorrow.2",
+	"appName": "Remembrance",
 	"webDir": "build",
-	"bundledWebRuntime": false
+	"bundledWebRuntime": false,
+	"plugins": {
+		"SplashScreen": {
+		  "androidScaleType": "CENTER_CROP"
+		}
+	  }
 }

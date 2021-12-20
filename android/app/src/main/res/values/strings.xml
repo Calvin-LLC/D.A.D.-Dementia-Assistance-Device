@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">solve for tomorrow.2</string>
-    <string name="title_activity_main">solve for tomorrow.2</string>
+    <string name="app_name">Remembrance</string>
+    <string name="title_activity_main">Remembrance</string>
     <string name="package_name">io.ionic.starter</string>
     <string name="custom_url_scheme">io.ionic.starter</string>
 </resources>

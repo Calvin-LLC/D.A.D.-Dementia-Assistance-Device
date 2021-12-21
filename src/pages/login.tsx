@@ -66,9 +66,9 @@ const Login: React.FC = (props) => {
   const password_ref = useRef<HTMLIonInputElement>(null);
 
   // website
-  var login_url = "https://ziadabdelati.com/check.php?email=";
+  var login_url = "https://ziadabdelati.com/check.php?type=login&email=";
+  var register_url = "https://ziadabdelati.com/check.php?type=register&email="
   
-
   const http_get = (URL: string) => {
     return axios({
       url: URL,
@@ -78,11 +78,6 @@ const Login: React.FC = (props) => {
     });
   };
 
-  const promise_error = (error: string) => {
-    set_error(error);
-    console.log("set error");
-  };
-
   const send = () => {
     const username = username_ref.current!.value; // the ? after current checks if the connections (refs) exists or not, an ! means we garauntee the fact that the value exists
     const password = password_ref.current!.value;
@@ -90,6 +85,7 @@ const Login: React.FC = (props) => {
     if (!username || !password) return;
 
     login_url += username + "&pword=" + password;
+    console.log(login_url);
     var res = http_get(login_url).then((response: any) => {
       if (response == 240) {
         console.log("correct data sent, redirecting");
@@ -101,27 +97,25 @@ const Login: React.FC = (props) => {
         set_logged_in("Failed to log in!");
       }
     });
-
     console.log("return: " + res);
-    console.log("username: " + username);
-    console.log("password: " + password);
   };
 
-  const reset = () => {
-    username_ref.current!.value = "";
-    password_ref.current!.value = "";
-    set_connected_status("");
-  };
+  const register = () => {
+    const username = username_ref.current!.value; // the ? after current checks if the connections (refs) exists or not, an ! means we garauntee the fact that the value exists
+    const password = password_ref.current!.value;
 
-  const clear_error = () => {
-    set_error("");
-  };
+    if (!username || !password) return;
+
+    register_url += username + "&pword=" + password;
+    http_get(register_url).then((response: any) => {
+      console.log(response);
+    });
+  }
 
   const toggle_pass = () => {
     set_show_pass(!show_pass);
     set_pass_shown(show_pass ? "text" : "password");
   }
-
 
   return (
     <IonPage>
@@ -171,9 +165,9 @@ const Login: React.FC = (props) => {
             </IonCol>
 
             <IonCol className="ion-text-right">
-              <IonButton onClick={reset}>
+              <IonButton onClick={register}>
                 <IonIcon slot="end" icon={banOutline} />
-                Reset
+                Register
               </IonButton>
             </IonCol>
           </IonRow>

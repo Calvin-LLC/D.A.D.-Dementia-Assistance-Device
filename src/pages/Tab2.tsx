@@ -15,12 +15,12 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import ExploreContainer from "../components/ExploreContainer";
+import { Geolocation, Geoposition } from "@ionic-native/geolocation";
 import "./Tab2.css";
 
 const Tab2: React.FC = () => {
   // states
   const [weather_data, set_weather_data] = useState<string>();
-
 
   const http_get = (URL: string) => {
     return axios({
@@ -30,13 +30,22 @@ const Tab2: React.FC = () => {
     });
   };
 
-  var weather_url = "http://api.weatherapi.com/v1/current.json?key=7640a167775a47be9a842820212111&q=35.8461766,-86.3773987&aqi=no";
-  
-    const update_weather = () => {
-    http_get(weather_url).then((response: any) => {
-      console.log(response);
-      var weather_obj = JSON.parse(JSON.stringify(response));
-      set_weather_data(weather_obj.current.condition.text);
+  var weather_url = "http://api.weatherapi.com/v1/current.json?key=7640a167775a47be9a842820212111&q=";
+
+  const get_location = () => {
+    return Geolocation.getCurrentPosition().then((response: Geoposition) => {
+      return weather_url + response.coords.longitude + "," + response.coords.latitude + "&aqi=no";
+    });
+  };
+
+  const update_weather = () => {
+    get_location().then((url: string) => {
+      console.log(url);
+      http_get(url).then((response: any) => {
+        var weather_obj = JSON.parse(JSON.stringify(response));
+        console.log(weather_obj);
+        set_weather_data(weather_obj.current.condition.text);
+      });
     });
   };
 

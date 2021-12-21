@@ -44,6 +44,7 @@ import "@ionic/react/css/display.css";
 /* Theme variables */
 import "./../theme/variables.css";
 import { useHistory } from "react-router-dom";
+import { data_send, data_recieve, save_login } from "./data";
 
 /* Notes 
   // ! means that the code will never be ran unless the object is valid
@@ -90,6 +91,9 @@ const Login: React.FC = (props) => {
       if (response == 240) {
         console.log("correct data sent, redirecting");
         set_logged_in("");
+        save_login(username, password);
+        data_recieve();
+
         //history.push('./TabManager');
         history.replace("./TabManager");
       } else {

@@ -27,4 +27,9 @@ export const data_recieve = () => {
     });
 };
 
-export const data_send = () => {};
+export const data_send = (data: string) => {
+    var send_url = login_url + "data_send" + "&email=" + correct_email + "&pword=" + correct_password + "&data=" + data;
+    http_get(send_url).then((response:any) => {
+        console.log(response);
+    });
+};

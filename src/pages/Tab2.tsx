@@ -22,6 +22,11 @@ const Tab2: React.FC = () => {
   // states
   const [weather_data, set_weather_data] = useState<string>();
 
+  // data variables
+  var grid_order = [];
+  var grid_type = [];
+  var grid_number: number = 10;
+
   const http_get = (URL: string) => {
     return axios({
       url: URL,
@@ -30,11 +35,18 @@ const Tab2: React.FC = () => {
     });
   };
 
-  var weather_url = "http://api.weatherapi.com/v1/current.json?key=7640a167775a47be9a842820212111&q=";
+  var weather_url =
+    "http://api.weatherapi.com/v1/current.json?key=7640a167775a47be9a842820212111&q=";
 
   const get_location = () => {
     return Geolocation.getCurrentPosition().then((response: Geoposition) => {
-      return weather_url + response.coords.longitude + "," + response.coords.latitude + "&aqi=no";
+      return (
+        weather_url +
+        response.coords.longitude +
+        "," +
+        response.coords.latitude +
+        "&aqi=no"
+      );
     });
   };
 
@@ -66,6 +78,21 @@ const Tab2: React.FC = () => {
         <IonButton onClick={update_weather}>Update Weather Widget!</IonButton>
         <IonGrid>
           <IonRow>
+          <div>
+            {Array(grid_number)
+              .fill(grid_number)
+              .map((_, i) => (
+                <div>
+                  <IonCol>
+                    <IonCard>
+                      <IonCardHeader>{weather_data}</IonCardHeader>
+                    </IonCard>
+                  </IonCol>
+                </div>
+              ))}
+          </div>
+          </IonRow>
+          <IonRow>
             <IonCol>
               <IonCard>
                 <IonCardHeader>{weather_data}</IonCardHeader>
@@ -77,7 +104,6 @@ const Tab2: React.FC = () => {
               </IonCard>
             </IonCol>
           </IonRow>
-
           <IonRow>
             <IonCol>
               <IonCard>
@@ -90,7 +116,6 @@ const Tab2: React.FC = () => {
               </IonCard>
             </IonCol>
           </IonRow>
-
           <IonRow>
             <IonCol>
               <IonCard>

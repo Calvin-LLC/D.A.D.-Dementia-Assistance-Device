@@ -35,9 +35,7 @@ import './theme/variables.css';
 import Login from './pages/login';
 import TabManager from './pages/TabManager';
 
-const App: React.FC = () => {
-  
-
+const App = () => {
   return (
   <IonApp>
     <IonReactRouter>

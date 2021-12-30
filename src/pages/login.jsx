@@ -46,31 +46,25 @@ import "./../theme/variables.css";
 import { useHistory } from "react-router-dom";
 import { data_send, data_recieve, save_login } from "./data";
 
-/* Notes 
-  // ! means that the code will never be ran unless the object is valid
-  // ? means that itll check whether or not the object exists
-  // + before var, changes it to number
-*/
-
-const Login: React.FC = (props) => {
+const Login = (props) => {
   let history = useHistory();
 
   // states
-  const [connected_status, set_connected_status] = useState<string>();
-  const [logged_in, set_logged_in] = useState<string>();
-  const [show_pass, set_show_pass] = useState<boolean>();
-  const [pass_shown, set_pass_shown] = useState<string>();
-  const [error, set_error] = useState<string>();
+  const [connected_status, set_connected_status] = useState();
+  const [logged_in, set_logged_in] = useState();
+  const [show_pass, set_show_pass] = useState();
+  const [pass_shown, set_pass_shown] = useState();
+  const [error, set_error] = useState();
 
   // refs
-  const username_ref = useRef<HTMLIonInputElement>(null);
-  const password_ref = useRef<HTMLIonInputElement>(null);
+  const username_ref = useRef(null);
+  const password_ref = useRef(null);
 
   // website
   var login_url = "https://ziadabdelati.com/check.php?type=login&email=";
   var register_url = "https://ziadabdelati.com/check.php?type=register&email="
   
-  const http_get = (URL: string) => {
+  const http_get = (URL) => {
     return axios({
       url: URL,
     }).then((response) => {
@@ -80,21 +74,21 @@ const Login: React.FC = (props) => {
   };
 
   const send = () => {
-    const username = username_ref.current!.value; // the ? after current checks if the connections (refs) exists or not, an ! means we garauntee the fact that the value exists
-    const password = password_ref.current!.value;
+    const username = username_ref.current.value; // the ? after current checks if the connections (refs) exists or not, an ! means we garauntee the fact that the value exists
+    const password = password_ref.current.value;
 
     if (!username || !password) return;
 
     login_url += username + "&pword=" + password;
     console.log(login_url);
-    var res = http_get(login_url).then((response: any) => {
+    var res = http_get(login_url).then((response) => {
       if (response == 240) {
         console.log("correct data sent, redirecting");
         set_logged_in("");
         save_login(username, password);
         data_recieve();
 
-        //history.push('./TabManager');
+        history.push('./TabManager');
         history.replace("./TabManager");
       } else {
         console.log("incorrect pass");
@@ -105,13 +99,13 @@ const Login: React.FC = (props) => {
   };
 
   const register = () => {
-    const username = username_ref.current!.value; // the ? after current checks if the connections (refs) exists or not, an ! means we garauntee the fact that the value exists
-    const password = password_ref.current!.value;
+    const username = username_ref.current.value; // the ? after current checks if the connections (refs) exists or not, an ! means we garauntee the fact that the value exists
+    const password = password_ref.current.value;
 
     if (!username || !password) return;
 
     register_url += username + "&pword=" + password;
-    http_get(register_url).then((response: any) => {
+    http_get(register_url).then((response) => {
       console.log(response);
     });
   }

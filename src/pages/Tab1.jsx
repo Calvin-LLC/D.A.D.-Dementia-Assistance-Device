@@ -6,10 +6,12 @@ import {
   IonPage,
   IonRow,
   IonCard,
-  IonCardContent
+  IonCardContent,
 } from "@ionic/react";
+import axios from "axios";
 
 import { useState, useEffect } from "react";
+import { data_recieve } from "./data";
 import "./Tab1.css";
 
 const Tab1 = () => {
@@ -60,43 +62,57 @@ const Tab1 = () => {
   };
 
   const store_data = () => {
-    const temp_data = test_obj;
-    if (temp_data.success == 1) {
-      console.log("items in list: " + temp_data.data.length);
-      for (var i = 0; i < temp_data.data.length; ++i) {
-        toggles[i] = temp_data.data[i].connected;
-        data_obj[i] = temp_data.data[i].data.value;
-        console.log("data: " + data_obj[i]);
-        console.log("toggles: " + toggles[i]);
-        setCol1(data_obj[0]);
-        setCol2(data_obj[1]);
+    data_recieve().then((response) => {
+      const temp_data = response;
+      if (temp_data.success == 1) {
+        console.log("items in list: " + temp_data.data.length);
+        for (var i = 0; i < temp_data.data.length; ++i) {
+          toggles[i] = temp_data.data[i].connected;
+          data_obj[i] = temp_data.data[i].data.value;
+          console.log("data: " + data_obj[i]);
+          console.log("toggles: " + toggles[i]);
+          if (data_obj[0].connected == 1) setCol1(data_obj[0].data);
+          else if (data_obj[1].connected == 1) setCol2(data_obj[1].data);
+        }
       }
-    }
+    });
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     setInterval(() => {
-      store_data() //i get ran every 5 seconds
-    }, 5000)
-},[])
+      store_data(); //i get ran every 5 seconds
+    }, 5000);
+  }, []);
 
   return (
     <IonPage>
-      <IonHeader>Hello</IonHeader>
       <IonContent fullscreen>
         <IonGrid>
           <IonRow>
-            <IonCol><IonCard><IonCardContent>{col1}</IonCardContent></IonCard></IonCol>
-            <IonCol><IonCard><IonCardContent>{col2}</IonCardContent></IonCard></IonCol>
+            <IonCol>
+              <IonCard>
+                <IonCardContent>{col1}</IonCardContent>
+              </IonCard>
+            </IonCol>
+            <IonCol>
+              <IonCard>
+                <IonCardContent>{col2}</IonCardContent>
+              </IonCard>
+            </IonCol>
           </IonRow>
+          
           {(toggles[0] || toggles[1]) && (
             <IonRow>
               {toggles[0] && (<IonCol>{col1}</IonCol>)}
               {toggles[1] && (<IonCol>{col2}</IonCol>)}
             </IonRow>
           )}
-          
-
+           {(toggles[2] || toggles[3]) && (
+            <IonRow>
+              {toggles[2] && (<IonCol>{col2}</IonCol>)}
+              {toggles[3] && (<IonCol>{col3}</IonCol>)}
+            </IonRow>
+          )}
           <IonRow></IonRow>
         </IonGrid>
       </IonContent>

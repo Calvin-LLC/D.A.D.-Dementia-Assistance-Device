@@ -5,12 +5,12 @@ var data_storage;
 var correct_email;
 var correct_password;
 var login_url = "https://ziadabdelati.com/check.php?type=";
+var current_screen;
 
 export const http_get = (URL) => {
   return axios({
     url: URL,
   }).then((response) => {
-    console.log(response);
     return response.data;
   });
 };
@@ -20,10 +20,11 @@ const save_login = (email, pass) => {
   correct_password = pass;
 };
 
-const data_recieve = async () => {
+const data_recieve = () => {
   var recieve_url = login_url + "data_recieve" + "&email=" + correct_email + "&pword=" + correct_password;
-  const response = await http_get(recieve_url);
-  return response.data;
+  return http_get(recieve_url).then((response) => {
+    return response;
+  });
 };
 
 const data_send = (data) => {
@@ -33,4 +34,13 @@ const data_send = (data) => {
     });
 };
 
-export {data_recieve, save_login, data_send};
+const save_screen = (current) => {
+  current_screen = current;
+}
+
+const get_current_screen = () => {
+  return current_screen;
+}
+
+export default {data_recieve, save_screen};
+export {data_recieve, save_login, data_send, save_screen, get_current_screen};

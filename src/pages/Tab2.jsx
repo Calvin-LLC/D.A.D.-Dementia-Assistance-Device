@@ -12,9 +12,10 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Geolocation } from "@ionic-native/geolocation";
 import "./Tab2.css";
+import { save_screen } from './data';
 
 const Tab2 = () => {
   // states
@@ -59,8 +60,16 @@ const Tab2 = () => {
     });
   };
 
+  function LoaderFunc(params){
+    useEffect(()=>{
+      save_screen(2);
+    }, [])
+    return <div></div>
+  }
+
   return (
     <IonPage>
+      <LoaderFunc/>
       <IonHeader>
         <IonToolbar>
           <IonTitle>Tab 2</IonTitle>

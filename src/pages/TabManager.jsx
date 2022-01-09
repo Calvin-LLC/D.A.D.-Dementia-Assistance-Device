@@ -31,17 +31,24 @@ import "@ionic/react/css/display.css";
 
 /* Theme variables */
 import "./../theme/variables.css";
+import { save_screen } from "./data";
 
 const TabManager = () => {
   return (
     <IonApp>
       <IonTabs>
         <IonRouterOutlet>
-          <Route path="/tab1" component={Tab1} exact/>
-          <Route path="/tab2" component={Tab2} exact/>
-          <Route path="/tab3" component={Tab3} exact/>
+          <Route path="/tab1" component={Tab1} exact>
+            {save_screen(1)}
+          </Route>
+          <Route path="/tab2" component={Tab2} exact>
+            {save_screen(2)}
+          </Route>
+          <Route path="/tab3" component={Tab3} exact>
+            {save_screen(3)}
+          </Route>
 
-          <Route path="/TabManager" exact> 
+          <Route path="/TabManager" exact>
             <Redirect to="/tab1" />
           </Route>
         </IonRouterOutlet>

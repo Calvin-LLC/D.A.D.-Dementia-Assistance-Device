@@ -7,7 +7,7 @@ var correct_password;
 var login_url = "https://ziadabdelati.com/check.php?type=";
 var current_screen;
 
-export const http_get = (URL) => {
+const http_get = (URL) => {
   return axios({
     url: URL,
   }).then((response) => {
@@ -42,5 +42,5 @@ const get_current_screen = () => {
   return current_screen;
 }
 
-export default {data_recieve, save_screen};
-export {data_recieve, save_login, data_send, save_screen, get_current_screen};
+export default {data_recieve, save_screen, http_get};
+export {data_recieve, save_login, data_send, save_screen, get_current_screen, http_get};

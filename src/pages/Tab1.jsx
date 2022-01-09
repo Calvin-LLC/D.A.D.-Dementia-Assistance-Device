@@ -8,11 +8,20 @@ import {
   IonCard,
   IonCardContent,
   IonItemSliding,
+  IonImg,
+  IonCardHeader,
+  IonCardTitle,
 } from "@ionic/react";
 import axios from "axios";
 
 import { useState, useEffect } from "react";
-import { data_recieve, get_current_screen, save_screen } from "./data";
+import {
+  data_recieve,
+  get_current_screen,
+  save_screen,
+  http_get,
+} from "./data";
+import { Geolocation } from "@ionic-native/geolocation";
 import "./Tab1.css";
 
 const Tab1 = () => {
@@ -21,8 +30,33 @@ const Tab1 = () => {
 
   var old_obj = new Array();
   var parsed_data = new Array();
-  var parsed_obj = new Array();
-  var toggles = new Array(20); // ! make sure it only has 20 total arrays, memory management people!!!!
+
+  const [weather_data, set_weather_data] = useState();
+
+  var weather_url =
+    "http://api.weatherapi.com/v1/current.json?key=7640a167775a47be9a842820212111&q=";
+
+  const get_location = () => {
+    return Geolocation.getCurrentPosition().then((response) => {
+      return (
+        weather_url +
+        response.coords.longitude +
+        "," +
+        response.coords.latitude +
+        "&aqi=no"
+      );
+    });
+  };
+
+  const update_weather = () => {
+    get_location().then((url) => {
+      http_get(url).then((response) => {
+        var weather_obj = JSON.parse(JSON.stringify(response));
+        console.log(weather_obj);
+        set_weather_data(weather_obj);
+      });
+    });
+  };
 
   const store_data = () => {
     data_recieve()
@@ -33,13 +67,25 @@ const Tab1 = () => {
         var len = response.data.length;
         if (response.data == old_obj) len = 0;
         else setCols([]);
-        console.log("length: " + len);
         for (var i = 0; i < len; ++i) {
-          parsed_data[i] =
-            "Type: " +
-            response.data[i].type +
-            "\nValue: " +
-            response.data[i].value;
+          switch (response.data[i].type) {
+            case "door":
+              parsed_data[i] =
+                "The door is " + (response.data[i].value ? "Opened" : "Closed");
+              break;
+            case "temp":
+              parsed_data[i] =
+                "Kitchen Temperature: " + response.data[i].value + "℉";
+              break;
+            case "oven":
+              parsed_data[i] = "Oven Power: " + response.data[i].value;
+              break;
+            default:
+              parsed_data[i] =
+                response.data[i].type + ": " + response.data[i].value;
+              break;
+          }
+
           setCols((cols) => [...cols, parsed_data[i]]);
         }
         old_obj = response.data;
@@ -49,29 +95,59 @@ const Tab1 = () => {
       });
   };
 
+  var weather_isupdated = false;
   useEffect(() => {
     setInterval(() => {
       if (get_current_screen() == 1) store_data(); //i get ran every 10 seconds
+      if (!weather_isupdated) {
+        update_weather();
+        weather_isupdated = true;
+      }
     }, 2000);
   }, []);
 
-  function LoaderFunc(params){
-    useEffect(()=>{
+  function LoaderFunc(params) {
+    useEffect(() => {
       save_screen(1);
-    }, [])
-    return <div></div>
+    }, []);
+    return <div></div>;
   }
 
   return (
     <IonPage>
       <IonContent fullscreen>
-        <LoaderFunc/>
+        <LoaderFunc />
         <IonGrid>
+          {weather_data && (
+            <IonRow>
+              <IonCol>
+                <IonCard>
+                  <IonCardHeader>
+                    <IonCardHeader>
+                      <IonCardTitle>
+                    {weather_data.location.name +
+                          ", " +
+                          weather_data.location.region}
+                          </IonCardTitle>
+                    </IonCardHeader>
+                  </IonCardHeader>
+                  <IonCardContent>
+                  <h2>{"Condition: " + weather_data.current.condition.text}<br/>{"Current Temp: " + weather_data.current.temp_f + "℉"}<br/>{"Feels Like: " + weather_data.current.feelslike_f + "℉"}</h2>
+                      <IonImg
+                        className="weather-img"
+                        src={weather_data.current.condition.icon}
+                        alt=""
+                      />
+                  </IonCardContent>
+                </IonCard>
+              </IonCol>
+            </IonRow>
+          )}
           <IonRow>
             {cols.map((col, i) => (
               <IonCol size="6" key={i + 1}>
                 <IonCard key={i + 1}>
-                  <IonCardContent key={i + 1}>{i + ": " + col}</IonCardContent>
+                  <IonCardContent key={i + 1}>{col}</IonCardContent>
                 </IonCard>
               </IonCol>
             ))}

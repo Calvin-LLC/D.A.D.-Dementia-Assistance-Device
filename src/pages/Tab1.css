@@ -1,3 +1,13 @@
 .new-line {
     white-space:pre
 }
+
+.weather-img {
+    max-width: 40%;
+    max-height: 40%;
+}
+
+.weather {
+    display: flex;
+    justify-content: space-between;
+}

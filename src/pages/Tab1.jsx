@@ -34,7 +34,7 @@ const Tab1 = () => {
   const [weather_data, set_weather_data] = useState();
 
   var weather_url =
-    "http://api.weatherapi.com/v1/current.json?key=7640a167775a47be9a842820212111&q=";
+    "hhttp://api.weatherapi.com/v1/current.json?key=7640a167775a47be9a842820212111&q=";
 
   const get_location = () => {
     return Geolocation.getCurrentPosition().then((response) => {

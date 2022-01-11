@@ -1,4 +1,5 @@
 import { Redirect, Route } from 'react-router-dom';
+import { useEffect } from 'react'
 import {
   IonApp,
   IonIcon,
@@ -35,7 +36,15 @@ import './theme/variables.css';
 import Login from './pages/login';
 import TabManager from './pages/TabManager';
 
+import OneSignal from "react-onesignal";
+
 const App = () => {
+  useEffect(() => {
+    OneSignal.init({
+      appId: "28e49e61-bde9-4f66-8225-67fb0b4fcd2a"
+    });
+  }, []);
+
   return (
   <IonApp>
     <IonReactRouter>

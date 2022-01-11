@@ -103,7 +103,7 @@ const Tab1 = () => {
         update_weather();
         weather_isupdated = true;
       }
-    }, 2000);
+    }, 200);
   }, []);
 
   function LoaderFunc(params) {

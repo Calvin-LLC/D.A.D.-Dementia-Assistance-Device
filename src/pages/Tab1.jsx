@@ -61,12 +61,9 @@ const Tab1 = () => {
   const store_data = () => {
     data_recieve()
       .then((response) => {
-        //console.log(response);
-        if (response.success != "1") return;
-
         var len = response.data.length;
         if (response.data == old_obj) len = 0;
-        else setCols([]);
+        else if (get_current_screen() == "1") setCols([]);
         for (var i = 0; i < len; ++i) {
           switch (response.data[i].type) {
             case "door":
@@ -85,8 +82,7 @@ const Tab1 = () => {
                 response.data[i].type + ": " + response.data[i].value;
               break;
           }
-
-          setCols((cols) => [...cols, parsed_data[i]]);
+          if (get_current_screen() == "1") setCols((cols) => [...cols, parsed_data[i]]);
         }
         old_obj = response.data;
       })
@@ -98,7 +94,8 @@ const Tab1 = () => {
   var weather_isupdated = false;
   useEffect(() => {
     setInterval(() => {
-      if (get_current_screen() == 1) store_data(); //i get ran every 10 seconds
+      if (get_current_screen() != "1") return;
+      store_data(); //i get ran every 10 seconds
       if (!weather_isupdated) {
         update_weather();
         weather_isupdated = true;

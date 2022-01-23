@@ -14,11 +14,7 @@ const Tab3 = () => {
   return (
     <IonPage>
       <LoaderFunc/>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Tab 3</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+      
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>

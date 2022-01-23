@@ -25,9 +25,6 @@ const Tab2 = () => {
   var grid_type = [];
   var grid_number = 10;
 
-
-  
-
   function LoaderFunc(params){
     useEffect(()=>{
       save_screen(2);
@@ -49,8 +46,6 @@ const Tab2 = () => {
             <IonTitle size="large">Tab 2</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonButton>Update Weather Widget!</IonButton>
-        
       </IonContent>
     </IonPage>
   );

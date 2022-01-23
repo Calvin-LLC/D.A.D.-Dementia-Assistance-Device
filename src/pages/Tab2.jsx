@@ -9,44 +9,61 @@ import {
   IonPage,
   IonRow,
   IonTitle,
+  IonCardContent,
   IonToolbar,
 } from "@ionic/react";
-import axios from "axios";
 import { useState, useEffect } from "react";
 import "./Tab2.css";
-import { save_screen } from './data';
+import { save_screen, get_reminder_data, send_reminder_data } from "./data";
+
+import Calendar from "react-calendar";
 
 const Tab2 = () => {
-  // states
-  const [weather_data, set_weather_data] = useState();
-
-  // data variables
-  var grid_order = [];
-  var grid_type = [];
-  var grid_number = 10;
-
-  function LoaderFunc(params){
-    useEffect(()=>{
+  function LoaderFunc(params) {
+    useEffect(() => {
       save_screen(2);
-    }, [])
-    return <div></div>
+    }, []);
+    return <div></div>;
   }
+
+  const [reminders, setReminders] = useState([]);
+
+  const [value, setValue] = useState(new Date());
+
+  const onChange = (newValue) => {
+    setValue(newValue);
+  };
+
+  var old_length = null;
+  const update_reminder = () => {
+    get_reminder_data().then((response) => {
+      var len = response.data.length;
+      if (len = old_length) len = 0;
+      for (var i = 0; i < len; ++i) {
+        setReminders((reminders) => [...reminders, response.data[i].reminder]);
+      }
+      old_length = len;
+    });
+  };
 
   return (
     <IonPage>
-      <LoaderFunc/>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Tab 2</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Tab 2</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-      </IonContent>
+      <LoaderFunc />
+
+      <IonGrid>
+        <IonRow>
+          {reminders.map((reminder, i) => (
+            <IonCol size="6" key={i + 1}>
+              <IonCard key={i + 1}>
+                <IonCardContent key={i + 1}>{reminder}</IonCardContent>
+              </IonCard>
+            </IonCol>
+          ))}
+        </IonRow>
+      </IonGrid>
+      <IonButton onClick={update_reminder}>Update Reminders</IonButton>
+
+      <Calendar onChange={onChange} value={value} />
     </IonPage>
   );
 };

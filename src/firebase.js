@@ -33,4 +33,11 @@ export const getToken = (setTokenFound) => {
   });
 }
 
+export const onMessageListener = () =>
+  new Promise((resolve) => {
+    messaging.onMessage((payload) => {
+      resolve(payload);
+    });
+});
+
 export default firebase;

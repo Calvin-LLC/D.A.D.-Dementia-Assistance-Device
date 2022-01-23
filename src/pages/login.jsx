@@ -52,8 +52,8 @@ const Login = (props) => {
   // states
   const [connected_status, set_connected_status] = useState();
   const [logged_in, set_logged_in] = useState();
-  const [show_pass, set_show_pass] = useState();
-  const [pass_shown, set_pass_shown] = useState();
+  const [show_pass, set_show_pass] = useState(true);
+  const [pass_shown, set_pass_shown] = useState("password");
   const [error, set_error] = useState();
 
   // refs
@@ -138,11 +138,11 @@ const Login = (props) => {
             <IonCol>
               <IonItem>
                 <IonLabel position="floating">Password</IonLabel>
-                <IonInput clearOnEdit={false} type="text" ref={password_ref}></IonInput>
-                {show_pass && (
+                <IonInput clearOnEdit={false} type={pass_shown} ref={password_ref}></IonInput>
+                {!show_pass && (
                 <IonIcon onClick={toggle_pass} slot="end" icon={eyeOutline}/>
                 )}
-                {!show_pass && (
+                {show_pass && (
                 <IonIcon onClick={toggle_pass} slot="end" icon={eyeOffOutline}/>
                 )}
               </IonItem>

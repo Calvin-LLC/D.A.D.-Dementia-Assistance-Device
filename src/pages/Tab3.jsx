@@ -1,20 +1,26 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import './Tab3.css';
-import {useEffect} from 'react';
-import { save_screen } from './data';
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+} from "@ionic/react";
+import "./Tab3.css";
+import { useEffect, useRef } from "react";
+import { save_screen } from "./data";
 
 const Tab3 = () => {
-  function LoaderFunc(params){
-    useEffect(()=>{
-      save_screen(3);
-    }, [])
-    return <div></div>
-  }
+  const mounted_prop = useRef(true); // Initial value _isMounted = true
+
+  useEffect(() => {
+    return () => {
+      // ComponentWillUnmount in Class Component
+      mounted_prop.current = false;
+    };
+  }, []);
 
   return (
     <IonPage>
-      <LoaderFunc/>
-      
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>

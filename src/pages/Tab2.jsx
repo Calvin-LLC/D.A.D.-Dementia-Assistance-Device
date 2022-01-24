@@ -12,19 +12,20 @@ import {
   IonCardContent,
   IonToolbar,
 } from "@ionic/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./Tab2.css";
 import { save_screen, get_reminder_data, send_reminder_data } from "./data";
 
 import Calendar from "react-calendar";
 
 const Tab2 = () => {
-  function LoaderFunc(params) {
-    useEffect(() => {
-      save_screen(2);
-    }, []);
-    return <div></div>;
-  }
+  const mounted_prop = useRef(true); // Initial value _isMounted = true
+
+  useEffect(() => {
+    return () => { // ComponentWillUnmount in Class Component
+        mounted_prop.current = false;
+    }
+  }, []);
 
   const [reminders, setReminders] = useState([]);
 
@@ -48,8 +49,6 @@ const Tab2 = () => {
 
   return (
     <IonPage>
-      <LoaderFunc />
-
       <IonGrid>
         <IonRow>
           {reminders.map((reminder, i) => (

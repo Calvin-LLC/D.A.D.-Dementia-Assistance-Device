@@ -21,6 +21,7 @@ import {
   IonAlert,
   IonText,
   IonPage,
+  useIonAlert,
 } from "@ionic/react";
 
 import { arrowForwardOutline, eyeOutline, eyeOffOutline, banOutline } from "ionicons/icons";
@@ -48,9 +49,9 @@ import { data_send, data_recieve, save_login } from "./data";
 
 const Login = (props) => {
   let history = useHistory();
+  const [login_status] = useIonAlert();
 
   // states
-  const [connected_status, set_connected_status] = useState();
   const [logged_in, set_logged_in] = useState();
   const [show_pass, set_show_pass] = useState(true);
   const [pass_shown, set_pass_shown] = useState("password");
@@ -68,7 +69,6 @@ const Login = (props) => {
     return axios({
       url: URL,
     }).then((response) => {
-      console.log(response);
       return response.data;
     });
   };
@@ -80,10 +80,8 @@ const Login = (props) => {
     if (!username || !password) return;
 
     login_url += username + "&pword=" + password;
-    console.log(login_url);
     var res = http_get(login_url).then((response) => {
       if (response == 240) {
-        console.log("correct data sent, redirecting");
         set_logged_in("");
         save_login(username, password);
         data_recieve();
@@ -91,11 +89,9 @@ const Login = (props) => {
         history.push('./TabManager');
         history.replace("./TabManager");
       } else {
-        console.log("incorrect pass");
-        set_logged_in("Failed to log in!");
+        login_status('Incorrect Username or password, please try again', [{ text: 'Ok' }]);
       }
     });
-    console.log("return: " + res);
   };
 
   const register = () => {
@@ -106,7 +102,7 @@ const Login = (props) => {
 
     register_url += username + "&pword=" + password;
     http_get(register_url).then((response) => {
-      console.log(response);
+      login_status('Account successfully registered!', [{ text: 'Ok' }]);
     });
   }
 
@@ -119,7 +115,7 @@ const Login = (props) => {
     <IonPage>
       <IonHeader>
         <IonToolbar color="primary" className="title-th">
-          <IonTitle>Smart Home</IonTitle>
+          <IonTitle>Smart Home Senior Thesis</IonTitle>
         </IonToolbar>
       </IonHeader>
 
@@ -146,40 +142,24 @@ const Login = (props) => {
                 <IonIcon onClick={toggle_pass} slot="end" icon={eyeOffOutline}/>
                 )}
               </IonItem>
-              {logged_in && (
-                <IonText>
-                  <p className="error">Incorrect Password!</p>
-                </IonText>
-              )}
             </IonCol>
           </IonRow>
 
           <IonRow>
-            <IonCol className="ion-text-left">
+            <IonCol size="6">
               <IonButton onClick={send}>
                 <IonIcon slot="end" icon={arrowForwardOutline} />
-                Send
+                Login
               </IonButton>
             </IonCol>
 
-            <IonCol className="ion-text-right">
+            <IonCol size="6">
               <IonButton onClick={register}>
                 <IonIcon slot="end" icon={banOutline} />
                 Register
               </IonButton>
             </IonCol>
           </IonRow>
-          {connected_status && (
-            <IonRow>
-              <IonCol>
-                <IonCard>
-                  <IonCardContent>
-                    <h2>{connected_status}</h2>
-                  </IonCardContent>
-                </IonCard>
-              </IonCol>
-            </IonRow>
-          )}
         </IonGrid>
       </IonContent>
     </IonPage>

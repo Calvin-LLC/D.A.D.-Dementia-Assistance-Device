@@ -14,7 +14,7 @@ import {
 } from "@ionic/react";
 import axios from "axios";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   data_recieve,
   get_current_screen,
@@ -25,6 +25,15 @@ import { Geolocation } from "@ionic-native/geolocation";
 import "./Tab1.css";
 
 const Tab1 = () => {
+  const mounted_prop = useRef(true); // Initial value _isMounted = true
+
+  useEffect(() => {
+    return () => {
+      // ComponentWillUnmount in Class Component
+      mounted_prop.current = false;
+    };
+  }, []);
+
   // states
   const [cols, setCols] = useState([]);
 
@@ -52,7 +61,7 @@ const Tab1 = () => {
     get_location().then((url) => {
       http_get(url).then((response) => {
         var weather_obj = JSON.parse(JSON.stringify(response));
-        console.log(weather_obj);
+        while (!mounted_prop.current) {}
         set_weather_data(weather_obj);
       });
     });
@@ -63,7 +72,7 @@ const Tab1 = () => {
       .then((response) => {
         var len = response.data.length;
         if (response.data == old_obj) len = 0;
-        else if (get_current_screen() == "1") setCols([]);
+        else if (mounted_prop.current) setCols([]);
         for (var i = 0; i < len; ++i) {
           switch (response.data[i].type) {
             case "door":
@@ -82,7 +91,8 @@ const Tab1 = () => {
                 response.data[i].type + ": " + response.data[i].value;
               break;
           }
-          if (get_current_screen() == "1") setCols((cols) => [...cols, parsed_data[i]]);
+          if (mounted_prop.current)
+            setCols((cols) => [...cols, parsed_data[i]]);
         }
         old_obj = response.data;
       })
@@ -94,8 +104,8 @@ const Tab1 = () => {
   var weather_isupdated = false;
   useEffect(() => {
     setInterval(() => {
-      if (get_current_screen() != "1") return;
-      store_data(); //i get ran every 10 seconds
+      if (!mounted_prop.current) return;
+      store_data();
       if (!weather_isupdated) {
         update_weather();
         weather_isupdated = true;
@@ -103,17 +113,9 @@ const Tab1 = () => {
     }, 2000);
   }, []);
 
-  function LoaderFunc(params) {
-    useEffect(() => {
-      save_screen(1);
-    }, []);
-    return <div></div>;
-  }
-
   return (
     <IonPage>
       <IonContent fullscreen>
-        <LoaderFunc />
         <IonGrid>
           {weather_data && (
             <IonRow>
@@ -122,19 +124,25 @@ const Tab1 = () => {
                   <IonCardHeader>
                     <IonCardHeader>
                       <IonCardTitle>
-                    {weather_data.location.name +
+                        {weather_data.location.name +
                           ", " +
                           weather_data.location.region}
-                          </IonCardTitle>
+                      </IonCardTitle>
                     </IonCardHeader>
                   </IonCardHeader>
                   <IonCardContent>
-                  <h2>{"Condition: " + weather_data.current.condition.text}<br/>{"Current Temp: " + weather_data.current.temp_f + "℉"}<br/>{"Feels Like: " + weather_data.current.feelslike_f + "℉"}</h2>
-                      <IonImg
-                        className="weather-img"
-                        src={weather_data.current.condition.icon}
-                        alt=""
-                      />
+                    <h2>
+                      {"Condition: " + weather_data.current.condition.text}
+                      <br />
+                      {"Current Temp: " + weather_data.current.temp_f + "℉"}
+                      <br />
+                      {"Feels Like: " + weather_data.current.feelslike_f + "℉"}
+                    </h2>
+                    <IonImg
+                      className="weather-img"
+                      src={weather_data.current.condition.icon}
+                      alt=""
+                    />
                   </IonCardContent>
                 </IonCard>
               </IonCol>

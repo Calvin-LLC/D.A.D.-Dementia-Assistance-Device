@@ -8,7 +8,13 @@ import {
   IonTabButton,
   IonTabs,
 } from "@ionic/react";
-import { ellipse, square, triangle, logInOutline } from "ionicons/icons";
+import { IonReactRouter } from '@ionic/react-router';
+import {
+  gridSharp,
+  alarmSharp,
+  settingsSharp,
+  logInOutline,
+} from "ionicons/icons";
 import Tab1 from "./Tab1";
 import Tab2 from "./Tab2";
 import Tab3 from "./Tab3";
@@ -31,41 +37,39 @@ import "@ionic/react/css/display.css";
 
 /* Theme variables */
 import "./../theme/variables.css";
-import { save_screen } from "./data";
+
+import { save_screen, get_current_screen } from "./data";
 
 const TabManager = () => {
   return (
     <IonApp>
       <IonTabs>
         <IonRouterOutlet>
-          <Route path="/tab1" component={Tab1} exact>
-            {save_screen(1)}
-          </Route>
-          <Route path="/tab2" component={Tab2} exact>
-            {save_screen(2)}
-          </Route>
-          <Route path="/tab3" component={Tab3} exact>
-            {save_screen(3)}
-          </Route>
+          <Route path="/tab1" component={Tab1} exact={true} />
+          <Route path="/tab2" component={Tab2} exact={true} />
+          <Route path="/tab3" component={Tab3} exact={true} />
 
-          <Route path="/TabManager" exact>
-            <Redirect to="/tab1" />
-          </Route>
+          <Route
+            exact
+            path="/TabManager"
+            render={() => <Redirect to="/tab1" />}
+          />
         </IonRouterOutlet>
+
         <IonTabBar slot="bottom">
           <IonTabButton tab="tab1" href="/tab1">
-            <IonIcon icon={triangle} />
-            <IonLabel>Tab 1</IonLabel>
+            <IonIcon icon={gridSharp} />
+            <IonLabel>Dashboard</IonLabel>
             <Redirect to="/tab1" />
           </IonTabButton>
           <IonTabButton tab="tab2" href="/tab2">
-            <IonIcon icon={ellipse} />
-            <IonLabel>Tab 2</IonLabel>
+            <IonIcon icon={alarmSharp} />
+            <IonLabel>Reminders</IonLabel>
             <Redirect to="/tab2" />
           </IonTabButton>
           <IonTabButton tab="tab3" href="/tab3">
-            <IonIcon icon={square} />
-            <IonLabel>Tab 3</IonLabel>
+            <IonIcon icon={settingsSharp} />
+            <IonLabel>Settings</IonLabel>
             <Redirect to="/tab3" />
           </IonTabButton>
         </IonTabBar>

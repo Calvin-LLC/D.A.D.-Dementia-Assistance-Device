@@ -61,7 +61,7 @@ const Tab1 = () => {
     get_location().then((url) => {
       http_get(url).then((response) => {
         var weather_obj = JSON.parse(JSON.stringify(response));
-        while (!mounted_prop.current) {}
+        //while (!mounted_prop.current) {}
         set_weather_data(weather_obj);
       });
     });

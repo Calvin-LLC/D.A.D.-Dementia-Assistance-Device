@@ -1,40 +1,64 @@
 import {
-  IonButton,
-  IonCard,
-  IonCardHeader,
-  IonCol,
   IonContent,
-  IonGrid,
-  IonHeader,
   IonPage,
-  IonRow,
-  IonTitle,
-  IonCardContent,
-  IonToolbar,
+  IonDatetime,
 } from "@ionic/react";
 import { useState, useEffect, useRef } from "react";
 import "./Tab2.css";
-import { save_screen, get_reminder_data, send_reminder_data } from "./data";
 
-import Calendar from "react-calendar";
+/* Core CSS required for Ionic components to work properly */
+import "@ionic/react/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+import "@ionic/react/css/normalize.css";
+import "@ionic/react/css/structure.css";
+import "@ionic/react/css/typography.css";
+
+/* Optional CSS utils that can be commented out */
+import "@ionic/react/css/padding.css";
+import "@ionic/react/css/float-elements.css";
+import "@ionic/react/css/text-alignment.css";
+import "@ionic/react/css/text-transformation.css";
+import "@ionic/react/css/flex-utils.css";
+import "@ionic/react/css/display.css";
+
+/* Theme variables */
+import ".././theme/variables.css";
+
+import { format, parseISO } from "date-fns";
 
 const Tab2 = () => {
   const mounted_prop = useRef(true); // Initial value _isMounted = true
 
   useEffect(() => {
-    return () => { // ComponentWillUnmount in Class Component
-        mounted_prop.current = false;
-    }
+    return () => {
+      // ComponentWillUnmount in Class Component
+      mounted_prop.current = false;
+    };
   }, []);
 
-  const [reminders, setReminders] = useState([]);
+  const [selectedDate, setSelectedDate] = useState("2012-12-15T13:47:20.789");
+  const [popoverDate, setPopoverDate] = useState("");
+  const [popoverDate2, setPopoverDate2] = useState("");
 
-  const [value, setValue] = useState(new Date());
+  const customDatetime = useRef();
+  const confirm = () => {
+    if (customDatetime === undefined) return;
 
-  const onChange = (newValue) => {
-    setValue(newValue);
+    customDatetime.confirm();
   };
 
+  const reset = () => {
+    if (customDatetime === undefined) return;
+
+    customDatetime.reset();
+  };
+
+  const formatDate = (value) => {
+    return format(parseISO(value), "MMM dd yyyy");
+  };
+
+  /*
   var old_length = null;
   const update_reminder = () => {
     get_reminder_data().then((response) => {
@@ -47,22 +71,22 @@ const Tab2 = () => {
     });
   };
 
+  const add_reminder = () => {
+    const reminder_msg = reminder_message.current.value;
+    const reminder_time = time_of_reminder.current.value;
+
+    if (!reminder_msg || !reminder_time) return;
+
+    send_reminder_data({"date":reminder_time, "reminder":reminder_msg}).then(() => {
+      update_reminder();
+    });
+  };*/
+
   return (
     <IonPage>
-      <IonGrid>
-        <IonRow>
-          {reminders.map((reminder, i) => (
-            <IonCol size="6" key={i + 1}>
-              <IonCard key={i + 1}>
-                <IonCardContent key={i + 1}>{reminder}</IonCardContent>
-              </IonCard>
-            </IonCol>
-          ))}
-        </IonRow>
-      </IonGrid>
-      <IonButton onClick={update_reminder}>Update Reminders</IonButton>
-
-      <Calendar onChange={onChange} value={value} />
+      <IonContent fullscreen>
+        <IonDatetime color='#eb445a' showClearButton={true}/>
+      </IonContent>
     </IonPage>
   );
 };

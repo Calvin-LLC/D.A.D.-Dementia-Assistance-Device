@@ -4,7 +4,8 @@ var data_storage;
 var correct_email;
 var correct_password;
 var login_url = "https://ziadabdelati.com/check.php?type=";
-var current_screen = "1";
+var is_logged_in = {"toggle":false};
+
 
 const http_get = (URL) => {
   return axios({
@@ -62,13 +63,5 @@ const send_reminder_data = (new_data) => {
   });
 }
 
-const save_screen = (current) => {
-  current_screen = current;
-}
-
-const get_current_screen = () => {
-  return current_screen;
-}
-
-export default {data_recieve, save_screen, http_get, http_post};
-export {data_recieve, save_login, data_send, save_screen, get_current_screen, http_get, get_reminder_data, send_reminder_data};
+export default {data_recieve, http_get, http_post, is_logged_in};
+export {data_recieve, save_login, data_send, http_get, get_reminder_data, send_reminder_data, is_logged_in};

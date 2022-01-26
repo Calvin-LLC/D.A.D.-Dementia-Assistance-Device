@@ -1,5 +1,5 @@
 // importing all of our react libs
-import React, { useRef, useState, useEffect } from "react"; // standard react to edit elements etc
+import React, { useRef, useState, useEffect, useContext } from "react"; // standard react to edit elements etc
 import axios from "axios"; // ezpz web comm
 
 import {
@@ -45,10 +45,10 @@ import "@ionic/react/css/display.css";
 /* Theme variables */
 import "./../theme/variables.css";
 import { useHistory } from "react-router-dom";
-import { data_send, data_recieve, save_login } from "./data";
+import { data_send, data_recieve, save_login, is_logged_in } from "./data";
+import { UserContext } from "../App";
 
 const Login = (props) => {
-  let history = useHistory();
   const [login_status] = useIonAlert();
 
   // states
@@ -56,6 +56,7 @@ const Login = (props) => {
   const [show_pass, set_show_pass] = useState(true);
   const [pass_shown, set_pass_shown] = useState("password");
   const [error, set_error] = useState();
+  const user = useContext(UserContext);
 
   // refs
   const username_ref = useRef(null);
@@ -86,8 +87,7 @@ const Login = (props) => {
         save_login(username, password);
         data_recieve();
 
-        history.push('./TabManager');
-        history.replace("./TabManager");
+        user.setIsLoggedIn(true);
       } else {
         login_status('Incorrect Username or password, please try again', [{ text: 'Ok' }]);
       }

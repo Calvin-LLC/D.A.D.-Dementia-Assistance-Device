@@ -1,5 +1,5 @@
 import { Redirect, Route } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   IonApp,
   IonIcon,
@@ -10,7 +10,6 @@ import {
   IonTabs,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import { ellipse, square, triangle, logInOutline } from "ionicons/icons";
 import Tab1 from "./pages/Tab1";
 import Tab2 from "./pages/Tab2";
 import Tab3 from "./pages/Tab3";
@@ -36,17 +35,36 @@ import "./theme/variables.css";
 import Login from "./pages/login";
 import TabManager from "./pages/TabManager";
 
+import {
+  gridSharp,
+  alarmSharp,
+  settingsSharp,
+  logInOutline,
+} from "ionicons/icons";
+import React from "react";
+
+interface IUserManager {
+  setIsLoggedIn: Function;
+}
+
+const user: IUserManager = {
+  setIsLoggedIn: () => {}
+};
+
+export const UserContext = React.createContext<IUserManager>(user);
+
 const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const user = useContext(UserContext);
+
+  user.setIsLoggedIn = setIsLoggedIn;
+
   return (
     <IonApp>
       <IonReactRouter>
-        <IonRouterOutlet>
-          <Route path="/login" component={Login} />
-          <Route path="/TabManager" component={TabManager} />
-
-          <Route exact path="/" render={() => <Redirect to="/login" />} />
-        </IonRouterOutlet>
-      </IonReactRouter>
+      <Route path="/login" component={Login} exact={true} />
+      <Route path="/" component={isLoggedIn ? TabManager : Login} />
+    </IonReactRouter>
     </IonApp>
   );
 };

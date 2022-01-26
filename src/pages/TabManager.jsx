@@ -8,7 +8,7 @@ import {
   IonTabButton,
   IonTabs,
 } from "@ionic/react";
-import { IonReactRouter } from '@ionic/react-router';
+import { IonReactRouter } from "@ionic/react-router";
 import {
   gridSharp,
   alarmSharp,
@@ -42,39 +42,29 @@ import { save_screen, get_current_screen } from "./data";
 
 const TabManager = () => {
   return (
-    <IonApp>
-      <IonTabs>
-        <IonRouterOutlet>
-          <Route path="/tab1" component={Tab1} exact={true} />
-          <Route path="/tab2" component={Tab2} exact={true} />
-          <Route path="/tab3" component={Tab3} exact={true} />
+    <IonTabs>
+      <IonRouterOutlet>
+        <Route exact path="/tab1" render={() => <Tab1/>} />
+        <Route exact path="/tab2" render={() => <Tab2/>} />
+        <Route exact path="/tab3" render={() => <Tab3/>} />
+        <Redirect exact from="/" to="/tab1" />
+      </IonRouterOutlet>
 
-          <Route
-            exact
-            path="/TabManager"
-            render={() => <Redirect to="/tab1" />}
-          />
-        </IonRouterOutlet>
-
-        <IonTabBar slot="bottom">
-          <IonTabButton tab="tab1" href="/tab1">
-            <IonIcon icon={gridSharp} />
-            <IonLabel>Dashboard</IonLabel>
-            <Redirect to="/tab1" />
-          </IonTabButton>
-          <IonTabButton tab="tab2" href="/tab2">
-            <IonIcon icon={alarmSharp} />
-            <IonLabel>Reminders</IonLabel>
-            <Redirect to="/tab2" />
-          </IonTabButton>
-          <IonTabButton tab="tab3" href="/tab3">
-            <IonIcon icon={settingsSharp} />
-            <IonLabel>Settings</IonLabel>
-            <Redirect to="/tab3" />
-          </IonTabButton>
-        </IonTabBar>
-      </IonTabs>
-    </IonApp>
+      <IonTabBar slot="bottom">
+        <IonTabButton tab="tab1" href="/tab1">
+          <IonIcon icon={gridSharp} />
+          <IonLabel>Dashboard</IonLabel>
+        </IonTabButton>
+        <IonTabButton tab="tab2" href="/tab2">
+          <IonIcon icon={alarmSharp} />
+          <IonLabel>Reminders</IonLabel>
+        </IonTabButton>
+        <IonTabButton tab="tab3" href="/tab3">
+          <IonIcon icon={settingsSharp} />
+          <IonLabel>Settings</IonLabel>
+        </IonTabButton>
+      </IonTabBar>
+    </IonTabs>
   );
 };
 

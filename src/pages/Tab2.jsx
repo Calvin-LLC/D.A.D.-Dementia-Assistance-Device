@@ -2,44 +2,24 @@ import {
   IonContent,
   IonPage,
   IonDatetime,
+  IonHeader,
+  IonText,
+  IonToolbar,
+  IonTitle
 } from "@ionic/react";
 import { useState, useEffect, useRef } from "react";
 import "./Tab2.css";
 
-/* Core CSS required for Ionic components to work properly */
-import "@ionic/react/css/core.css";
-
-/* Basic CSS for apps built with Ionic */
-import "@ionic/react/css/normalize.css";
-import "@ionic/react/css/structure.css";
-import "@ionic/react/css/typography.css";
-
-/* Optional CSS utils that can be commented out */
-import "@ionic/react/css/padding.css";
-import "@ionic/react/css/float-elements.css";
-import "@ionic/react/css/text-alignment.css";
-import "@ionic/react/css/text-transformation.css";
-import "@ionic/react/css/flex-utils.css";
-import "@ionic/react/css/display.css";
-
-/* Theme variables */
-import ".././theme/variables.css";
-
 import { format, parseISO } from "date-fns";
 
 const Tab2 = () => {
-  const mounted_prop = useRef(true); // Initial value _isMounted = true
+  const mounted_prop = useRef(true);
 
   useEffect(() => {
     return () => {
-      // ComponentWillUnmount in Class Component
       mounted_prop.current = false;
     };
   }, []);
-
-  const [selectedDate, setSelectedDate] = useState("2012-12-15T13:47:20.789");
-  const [popoverDate, setPopoverDate] = useState("");
-  const [popoverDate2, setPopoverDate2] = useState("");
 
   const customDatetime = useRef();
   const confirm = () => {
@@ -82,11 +62,15 @@ const Tab2 = () => {
     });
   };*/
 
+  const [selectedDate, setSelectedDate] = useState(new Date());
   return (
     <IonPage>
-      <IonContent fullscreen>
-        <IonDatetime color='#eb445a' showClearButton={true}/>
-      </IonContent>
+      <IonHeader>
+        <IonToolbar color="primary" className="title-th">
+          <IonTitle>Reminders</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonDatetime value={selectedDate} showClearButton={true}/>
     </IonPage>
   );
 };

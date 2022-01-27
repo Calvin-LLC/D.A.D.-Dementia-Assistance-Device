@@ -1,11 +1,15 @@
 import axios from "axios"; // ezpz web comm
 
 var data_storage;
-var correct_email;
-var correct_password;
-var login_url = "https://ziadabdelati.com/check.php?type=";
+var correct_login;
+var login_url = "https://ziadabdelati.com/check.php";
 var is_logged_in = {"toggle":false};
-
+var template = {
+  "email" : "",
+  "pword" : "",
+  "type"  : "",
+  "post"  : ""
+};
 
 const http_get = (URL) => {
   return axios({
@@ -25,28 +29,33 @@ const http_post = (URL, DATA) => {
   });
 }
 
-const save_login = (email, pass) => {
-  correct_email = email;
-  correct_password = pass;
+const save_login = (obj) => {
+  template.email = obj.email;
+  template.pword = obj.pword;
 };
 
 const data_recieve = () => {
-  var recieve_url = login_url + "data_recieve" + "&email=" + correct_email + "&pword=" + correct_password;
-  return http_get(recieve_url).then((response) => {
+  var new_obj = template;
+  new_obj.type = "data_recieve";
+  console.log(new_obj);
+  return http_post(login_url, new_obj).then((response) => {
     return response;
   });
 };
 
 const data_send = (data) => {
-    var send_url = login_url + "data_send" + "&email=" + correct_email + "&pword=" + correct_password + "&data=" + data;
-    http_get(send_url).then((response) => {
+    var new_obj = template;
+    new_obj.type = "data_send";
+    new_obj.post = data;
+    http_post(login_url, new_obj).then((response) => {
         console.log(response);
     });
 };
 
 const get_reminder_data = () => {
-  var url = login_url + "get_reminder_data" + "&email=" + correct_email + "&pword=" + correct_password;
-  return http_get(url).then((response) => {
+  var new_obj = template;
+  new_obj.type = "get_reminder_data";
+  return http_post(login_url, new_obj).then((response) => {
     return response.data;
   });
 }
@@ -56,12 +65,14 @@ const send_reminder_data = (new_data) => {
     var send_data = response.data;
     send_data.push(new_data);
     
-    var url = login_url + "send_reminder_data" + "&email=" + correct_email + "&pword=" + correct_password;
-    http_post(url, send_data).then((res) => {
+    var new_obj = template;
+    new_obj.type = "send_reminder_data";
+    new_obj.post = send_data;
+    http_post(login_url, new_obj).then((res) => {
       console.log(res);
     });
   });
 }
 
 export default {data_recieve, http_get, http_post, is_logged_in};
-export {data_recieve, save_login, data_send, http_get, get_reminder_data, send_reminder_data, is_logged_in};
+export {data_recieve, save_login, data_send, http_get, http_post, get_reminder_data, send_reminder_data, is_logged_in};

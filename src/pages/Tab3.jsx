@@ -22,11 +22,7 @@ const Tab3 = () => {
   return (
     <IonPage>
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Tab 3</IonTitle>
-          </IonToolbar>
-        </IonHeader>
+        <h2>Tab3</h2>
       </IonContent>
     </IonPage>
   );

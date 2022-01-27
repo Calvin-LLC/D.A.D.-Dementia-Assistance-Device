@@ -26,26 +26,8 @@ import {
 
 import { arrowForwardOutline, eyeOutline, eyeOffOutline, banOutline } from "ionicons/icons";
 
-/* Core CSS required for Ionic components to work properly */
-import "@ionic/react/css/core.css";
-
-/* Basic CSS for apps built with Ionic */
-import "@ionic/react/css/normalize.css";
-import "@ionic/react/css/structure.css";
-import "@ionic/react/css/typography.css";
-
-/* Optional CSS utils that can be commented out */
-import "@ionic/react/css/padding.css";
-import "@ionic/react/css/float-elements.css";
-import "@ionic/react/css/text-alignment.css";
-import "@ionic/react/css/text-transformation.css";
-import "@ionic/react/css/flex-utils.css";
-import "@ionic/react/css/display.css";
-
-/* Theme variables */
-import "./../theme/variables.css";
 import { useHistory } from "react-router-dom";
-import { data_send, data_recieve, save_login, is_logged_in } from "./data";
+import { data_send, data_recieve, http_post, save_login, is_logged_in } from "./data";
 import { UserContext } from "../App";
 
 const Login = (props) => {
@@ -63,8 +45,7 @@ const Login = (props) => {
   const password_ref = useRef(null);
 
   // website
-  var login_url = "https://ziadabdelati.com/check.php?type=login&email=";
-  var register_url = "https://ziadabdelati.com/check.php?type=register&email="
+  var server_url = "https://ziadabdelati.com/check.php";
   
   const http_get = (URL) => {
     return axios({
@@ -80,13 +61,15 @@ const Login = (props) => {
 
     if (!username || !password) return;
 
-    login_url += username + "&pword=" + password;
-    var res = http_get(login_url).then((response) => {
-      if (response == 240) {
-        set_logged_in("");
-        save_login(username, password);
-        data_recieve();
+    var obj = {
+      "email" : username,
+      "pword" : password,
+      "type"  : "login"
+    };
 
+    http_post(server_url, obj).then((response) => {
+      if (response == 240) {
+        save_login(obj);
         user.setIsLoggedIn(true);
       } else {
         login_status('Incorrect Username or password, please try again', [{ text: 'Ok' }]);
@@ -95,13 +78,18 @@ const Login = (props) => {
   };
 
   const register = () => {
-    const username = username_ref.current.value; // the ? after current checks if the connections (refs) exists or not, an ! means we garauntee the fact that the value exists
+    const username = username_ref.current.value;
     const password = password_ref.current.value;
 
     if (!username || !password) return;
-
-    register_url += username + "&pword=" + password;
-    http_get(register_url).then((response) => {
+    
+    var obj = {
+      "email" : username,
+      "pword" : password,
+      "type"  : "login"
+    };
+    
+    http_post(server_url, obj).then((response) => {
       login_status('Account successfully registered!', [{ text: 'Ok' }]);
     });
   }

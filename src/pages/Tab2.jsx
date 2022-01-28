@@ -10,8 +10,6 @@ import {
 import { useState, useEffect, useRef } from "react";
 import "./Tab2.css";
 
-import { format, parseISO } from "date-fns";
-
 const Tab2 = () => {
   const mounted_prop = useRef(true);
 
@@ -20,23 +18,6 @@ const Tab2 = () => {
       mounted_prop.current = false;
     };
   }, []);
-
-  const customDatetime = useRef();
-  const confirm = () => {
-    if (customDatetime === undefined) return;
-
-    customDatetime.confirm();
-  };
-
-  const reset = () => {
-    if (customDatetime === undefined) return;
-
-    customDatetime.reset();
-  };
-
-  const formatDate = (value) => {
-    return format(parseISO(value), "MMM dd yyyy");
-  };
 
   /*
   var old_length = null;
@@ -62,7 +43,7 @@ const Tab2 = () => {
     });
   };*/
 
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState();
   return (
     <IonPage>
       <IonHeader>

@@ -34,11 +34,11 @@
     "mobiscroll": "^3.0.0-beta6",
     "moment": "^2.29.1",
     "pullstate": "^1.23.0",
-    "react": "^17.0.1",
+    "react": "^17.0.2",
     "react-bootstrap": "^2.1.1",
     "react-calendar": "^3.6.0",
     "react-datetime-picker": "^3.4.3",
-    "react-dom": "^17.0.1",
+    "react-dom": "^17.0.2",
     "react-onesignal": "^2.0.2",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
@@ -61,7 +61,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)'",
     "eject": "react-scripts eject",
     "resources": "cordova-res ios && cordova-res android && node scripts/resources.js"
   },

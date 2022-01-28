@@ -34,10 +34,8 @@ const Login = (props) => {
   const [login_status] = useIonAlert();
 
   // states
-  const [logged_in, set_logged_in] = useState();
   const [show_pass, set_show_pass] = useState(true);
   const [pass_shown, set_pass_shown] = useState("password");
-  const [error, set_error] = useState();
   const user = useContext(UserContext);
 
   // refs
@@ -47,14 +45,6 @@ const Login = (props) => {
   // website
   var server_url = "https://ziadabdelati.com/check.php";
   
-  const http_get = (URL) => {
-    return axios({
-      url: URL,
-    }).then((response) => {
-      return response.data;
-    });
-  };
-
   const send = () => {
     const username = username_ref.current.value; // the ? after current checks if the connections (refs) exists or not, an ! means we garauntee the fact that the value exists
     const password = password_ref.current.value;
@@ -113,7 +103,7 @@ const Login = (props) => {
             <IonCol>
               <IonItem>
                 <IonLabel position="floating">Email</IonLabel>
-                <IonInput clearInput={true} type="email" ref={username_ref}></IonInput>
+                <IonInput clearInput={true} type="email" placeholder="email" ref={username_ref}></IonInput>
               </IonItem>
             </IonCol>
           </IonRow>
@@ -122,7 +112,7 @@ const Login = (props) => {
             <IonCol>
               <IonItem>
                 <IonLabel position="floating">Password</IonLabel>
-                <IonInput clearOnEdit={false} type={pass_shown} ref={password_ref}></IonInput>
+                <IonInput clearOnEdit={false} type={pass_shown} placeholder="password" ref={password_ref}></IonInput>
                 {!show_pass && (
                 <IonIcon onClick={toggle_pass} slot="end" icon={eyeOutline}/>
                 )}

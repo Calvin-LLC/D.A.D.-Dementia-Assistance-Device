@@ -8,6 +8,7 @@ import {
   IonTabBar,
   IonTabButton,
   IonTabs,
+  setupIonicReact,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import Tab1 from "./pages/Tab1";
@@ -52,13 +53,14 @@ const user: IUserManager = {
 };
 
 export const UserContext = React.createContext<IUserManager>(user);
+setupIonicReact({});
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const user = useContext(UserContext);
 
   user.setIsLoggedIn = setIsLoggedIn;
-
+  
   return (
     <IonApp>
       <IonReactRouter>

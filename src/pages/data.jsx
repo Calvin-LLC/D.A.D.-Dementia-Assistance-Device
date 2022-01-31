@@ -27,11 +27,13 @@ const http_post = (URL, DATA) => {
   });
 }
 
+// saves the login in order for future use in the data lib
 const save_login = (obj) => {
   template.email = obj.email;
   template.pword = obj.pword;
 };
 
+// returns a promise containing all the data from the server
 const data_recieve = () => {
   var new_obj = template;
   new_obj.type = "data_recieve";
@@ -40,6 +42,7 @@ const data_recieve = () => {
   });
 };
 
+// sends whatever data to the server
 const data_send = (data) => {
     var new_obj = template;
     new_obj.type = "data_send";
@@ -49,6 +52,7 @@ const data_send = (data) => {
     });
 };
 
+// returns a promise of reminder data
 const get_reminder_data = () => {
   var new_obj = template;
   new_obj.type = "get_reminder_data";
@@ -57,12 +61,14 @@ const get_reminder_data = () => {
   });
 }
 
+// automatically retrieves reminder data, adds the new data, then sends new one to server
 const send_reminder_data = (new_data) => {
   return get_reminder_data().then((response) => {
+    console.log(response);
     var new_obj = template;
     new_obj.type = "send_reminder_data";
     if (response.length == 0) {
-      new_obj.post = '{"data":[{"date":"' + new_data.date + ', "reminder" : ' + new_data.reminder + '"}],"success":1}';
+      new_obj.post = JSON.stringify('{"data":[{"date":"' + new_data.date + '", "reminder" : "' + new_data.reminder + '"}],"success":1}');
     } else {
       var post_obj = response;
       post_obj["data"].push({"date" : new_data.date, "reminder" : new_data.reminder});
@@ -76,11 +82,28 @@ const send_reminder_data = (new_data) => {
   });
 }
 
+// remove the reminder data at i index
+const remove_reminder_data = (i) => {
+  return get_reminder_data().then((response) => {
+    var new_obj = template;
+    new_obj.type = "send_reminder_data";
+    var post_obj = response;
+    post_obj.data.splice(i, 1);
+    new_obj.post = JSON.stringify(post_obj);
+    
+    return http_post(login_url, new_obj).then((res) => {
+      console.log(res);
+      return res;
+    });
+  })
+}
+
+// contact as a string, either email or phone number
 const send_reminder_contact = (contact) => {
   return get_reminder_contact().then((response) => {
     var new_obj = template;
     new_obj.type = "send_reminder_contact";
-    new_obj.post = '{"data":[{"contact":"' + contact + '"}],"success":1}';
+    //new_obj.post = '{"data":[{"contact":"' + contact + '"}],"success":1}';
     if (response.length == 0) {
       new_obj.post = '{"data":[{"contact":"' + contact + '"}],"success":1}';
     } else {
@@ -96,6 +119,22 @@ const send_reminder_contact = (contact) => {
   })
 }
 
+// removes whatever contact i send it
+const remove_reminder_contact = (i) => {
+  return get_reminder_contact().then((response) => {
+    var new_obj = template;
+    new_obj.type = "send_reminder_contact";
+    var post_obj = response;
+    post_obj.data.splice(i, 1);
+    new_obj.post = JSON.stringify(post_obj);
+    
+    return http_post(login_url, new_obj).then((res) => {
+      return res;
+    });
+  })
+}
+
+// returns a promise containing the json of the reminder details
 const get_reminder_contact = () => {
   var new_obj = template;
   new_obj.type = "get_reminder_contact";
@@ -104,5 +143,5 @@ const get_reminder_contact = () => {
   });
 };
 
-export default {data_recieve, http_get, http_post, is_logged_in, send_reminder_data, send_reminder_contact, get_reminder_contact};
-export {data_recieve, save_login, data_send, http_get, http_post, get_reminder_data, send_reminder_data, send_reminder_contact, get_reminder_contact, is_logged_in};
+export default {data_recieve, http_get, http_post, is_logged_in, send_reminder_data, send_reminder_contact, get_reminder_contact, remove_reminder_contact, remove_reminder_data};
+export {data_recieve, save_login, data_send, http_get, http_post, get_reminder_data, send_reminder_data, send_reminder_contact, get_reminder_contact, is_logged_in, remove_reminder_contact, remove_reminder_data};

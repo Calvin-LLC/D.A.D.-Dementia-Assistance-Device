@@ -19,7 +19,7 @@ import {
 } from "@ionic/react";
 import "./Tab3.css";
 import { useEffect, useRef, useState } from "react";
-import { get_reminder_contact, send_reminder_contact } from "./data";
+import { get_reminder_contact, send_reminder_contact, remove_reminder_contact } from "./data";
 
 const Tab3 = () => {
   const mounted_prop = useRef(true);
@@ -58,7 +58,6 @@ const Tab3 = () => {
     get_reminder_contact()
       .then((res) => {
         var response = res.data;
-        console.log(res);
         var len = response.length;
         if (response == old_obj) len = 0;
         else if (mounted_prop.current) setCols([]);
@@ -73,6 +72,11 @@ const Tab3 = () => {
         console.log("caught error: " + err);
       });
   };
+
+  const delete_contact = (i) => {
+    console.log(i);
+    remove_reminder_contact(i);
+  }
 
   useEffect(() => {
     setInterval(() => {
@@ -107,12 +111,15 @@ const Tab3 = () => {
           {cols.map((col, i) => (
             <IonItem lines="inset" key={i + 1}>
               <IonTitle key={i + 1}>{col}</IonTitle>
+              <IonButton slot="end" onClick={() => {
+                delete_contact(i);
+              }}>X</IonButton>
             </IonItem>
           ))}
           <IonItem>
             <IonInput
               ref={reminder_data}
-              placeholder="Reminder Email / Password"
+              placeholder="Reminder Email / Phone"
             />
             <IonButton onClick={add_reminder_person}>Add Contact</IonButton>
           </IonItem>

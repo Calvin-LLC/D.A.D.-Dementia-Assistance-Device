@@ -14,10 +14,12 @@ import {
   IonCol,
   IonItem,
   IonCard,
+  IonLabel,
+  IonListHeader,
 } from "@ionic/react";
 import { useState, useEffect, useRef } from "react";
 import "./Tab2.css";
-import { get_reminder_data, send_reminder_data } from "./data";
+import { get_reminder_data, send_reminder_data, remove_reminder_data } from "./data";
 import { format, parseISO } from "date-fns";
 
 const Tab2 = () => {
@@ -34,6 +36,7 @@ const Tab2 = () => {
   const [cols, setCols] = useState([]);
 
   var old_obj = new Array();
+  var parsed_obj = new Array();
 
   const update_reminder = () => {
     get_reminder_data().then((response) => {
@@ -41,16 +44,18 @@ const Tab2 = () => {
       if (response.data == old_obj) len = 0;
       else if (mounted_prop.current) setCols([]);
       for (var i = 0; i < len; ++i) {
-        //console.log(response.data[i].reminder);
-        setCols((cols) => [...cols, response.data[i].reminder]);
+        parsed_obj[i] = {date : format(parseISO(response.data[i].date), 'PPPPpppp'), reminder : response.data[i].reminder};
+        setCols((cols) => [...cols, parsed_obj[i]]);
       }
       old_obj = response.data;
+    }).catch((err) => {
+      console.log("Error caught: " + err);
     });
   };
 
   const add_reminder = () => {
     const reminder_msg = reminder_data.current.value;
-    console.log(selectedDate);
+
     if (!reminder_msg || !selectedDate) return;
 
     send_reminder_data({ date: selectedDate, reminder: reminder_msg }).then(
@@ -59,6 +64,11 @@ const Tab2 = () => {
       }
     );
   };
+
+  const delete_reminder = (i) => {
+    console.log(i);
+    remove_reminder_data(i);
+  }
 
   useEffect(() => {
     setInterval(() => {
@@ -77,9 +87,17 @@ const Tab2 = () => {
       <IonContent fullscreen>
         <IonList>
           {cols.map((col, i) => (
-            <IonItem lines="inset" key={i + 1}>
-              <IonTitle key={i + 1}>{col}</IonTitle>
-            </IonItem>
+            <div key={i + 1}>
+              <IonListHeader lines="none">
+                <IonLabel>{col.date}</IonLabel>
+              </IonListHeader>
+              <IonItem lines="full">
+                <IonLabel>{"- " + col.reminder}</IonLabel>
+              </IonItem>
+              <IonButton slot="end" onClick={() => {
+                delete_reminder(i);
+              }}>X</IonButton>
+            </div>
           ))}
 
           <IonDatetime

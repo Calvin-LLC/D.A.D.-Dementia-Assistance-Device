@@ -5,10 +5,20 @@ import {
   IonHeader,
   IonText,
   IonToolbar,
-  IonTitle
+  IonTitle,
+  IonGrid,
+  IonRow,
+  IonInput,
+  IonButton,
+  IonList,
+  IonCol,
+  IonItem,
+  IonCard,
 } from "@ionic/react";
 import { useState, useEffect, useRef } from "react";
 import "./Tab2.css";
+import { get_reminder_data, send_reminder_data } from "./data";
+import { format, parseISO } from "date-fns";
 
 const Tab2 = () => {
   const mounted_prop = useRef(true);
@@ -19,31 +29,44 @@ const Tab2 = () => {
     };
   }, []);
 
-  /*
-  var old_length = null;
+  const reminder_data = useRef(null);
+  const [selectedDate, setSelectedDate] = useState();
+  const [cols, setCols] = useState([]);
+
+  var old_obj = new Array();
+
   const update_reminder = () => {
     get_reminder_data().then((response) => {
       var len = response.data.length;
-      if (len = old_length) len = 0;
+      if (response.data == old_obj) len = 0;
+      else if (mounted_prop.current) setCols([]);
       for (var i = 0; i < len; ++i) {
-        setReminders((reminders) => [...reminders, response.data[i].reminder]);
+        //console.log(response.data[i].reminder);
+        setCols((cols) => [...cols, response.data[i].reminder]);
       }
-      old_length = len;
+      old_obj = response.data;
     });
   };
 
   const add_reminder = () => {
-    const reminder_msg = reminder_message.current.value;
-    const reminder_time = time_of_reminder.current.value;
+    const reminder_msg = reminder_data.current.value;
+    console.log(selectedDate);
+    if (!reminder_msg || !selectedDate) return;
 
-    if (!reminder_msg || !reminder_time) return;
+    send_reminder_data({ date: selectedDate, reminder: reminder_msg }).then(
+      () => {
+        update_reminder();
+      }
+    );
+  };
 
-    send_reminder_data({"date":reminder_time, "reminder":reminder_msg}).then(() => {
+  useEffect(() => {
+    setInterval(() => {
+      if (!mounted_prop.current) return;
       update_reminder();
-    });
-  };*/
+    }, 2000);
+  }, []);
 
-  const [selectedDate, setSelectedDate] = useState();
   return (
     <IonPage>
       <IonHeader>
@@ -51,7 +74,28 @@ const Tab2 = () => {
           <IonTitle>Reminders</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonDatetime value={selectedDate} showClearButton={true}/>
+      <IonContent fullscreen>
+        <IonList>
+          {cols.map((col, i) => (
+            <IonItem lines="inset" key={i + 1}>
+              <IonTitle key={i + 1}>{col}</IonTitle>
+            </IonItem>
+          ))}
+
+          <IonDatetime
+            value={selectedDate}
+            showClearButton
+            onIonChange={(e) => setSelectedDate(e.detail.value)}
+          >
+            <div slot="title">Reminder Date and Time</div>
+          </IonDatetime>
+
+          <IonItem>
+            <IonInput ref={reminder_data} placeholder="Reminder message" />
+            <IonButton onClick={add_reminder}>Add Reminder</IonButton>
+          </IonItem>
+        </IonList>
+      </IonContent>
     </IonPage>
   );
 };

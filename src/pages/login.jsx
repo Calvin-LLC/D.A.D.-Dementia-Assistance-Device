@@ -58,10 +58,11 @@ const Login = (props) => {
     };
 
     http_post(server_url, obj).then((response) => {
-      if (response == 240) {
+      if (response.search(240) != -1) {
         save_login(obj);
         user.setIsLoggedIn(true);
       } else {
+        console.log(response);
         login_status('Incorrect Username or password, please try again', [{ text: 'Ok' }]);
       }
     });

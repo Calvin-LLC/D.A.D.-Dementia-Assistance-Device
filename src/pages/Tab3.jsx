@@ -19,7 +19,8 @@ import {
 } from "@ionic/react";
 import "./Tab3.css";
 import { useEffect, useRef, useState } from "react";
-import { get_reminder_contact, send_reminder_contact, remove_reminder_contact } from "./data";
+import { get_reminder_contact, send_reminder_contact, remove_reminder_contact } from "../componets/data";
+import { db_set, db_get } from "../componets/storage";
 
 const Tab3 = () => {
   const mounted_prop = useRef(true);
@@ -49,8 +50,8 @@ const Tab3 = () => {
     }
 
     send_reminder_contact(reminder_info).then((response) => {
-      console.log(response);
       set_toast_data(true);
+      reminder_data.current.value = "";
     });
   };
 
@@ -67,22 +68,24 @@ const Tab3 = () => {
             setCols((cols) => [...cols, parsed_data[i]]);
         }
         old_obj = response;
+        db_set("contact_obj", parsed_data);
       })
       .catch((err) => {
         console.log("caught error: " + err);
       });
   };
 
-  const delete_contact = (i) => {
-    console.log(i);
-    remove_reminder_contact(i);
-  }
-
   useEffect(() => {
     setInterval(() => {
       if (!mounted_prop.current) return;
       store_data();
     }, 2000);
+  }, []);
+
+  useEffect(() => {
+    db_get("contact_obj").then((response) => {
+      if (response) setCols(response);
+    });
   }, []);
 
   return (
@@ -112,7 +115,7 @@ const Tab3 = () => {
             <IonItem lines="inset" key={i + 1}>
               <IonTitle key={i + 1}>{col}</IonTitle>
               <IonButton slot="end" onClick={() => {
-                delete_contact(i);
+                remove_reminder_contact(i);
               }}>X</IonButton>
             </IonItem>
           ))}

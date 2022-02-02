@@ -19,7 +19,7 @@ import Tab1 from "./Tab1";
 import Tab2 from "./Tab2";
 import Tab3 from "./Tab3";
 
-import { save_screen, get_current_screen } from "./data";
+import { save_screen, get_current_screen } from "../componets/data";
 
 const TabManager = () => {
   return (

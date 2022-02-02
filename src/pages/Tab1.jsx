@@ -20,16 +20,16 @@ import {
   get_current_screen,
   save_screen,
   http_get,
-} from "./data";
+} from "../componets/data";
 import { Geolocation } from "@ionic-native/geolocation";
 import "./Tab1.css";
+import { db_get, db_set } from "../componets/storage";
 
 const Tab1 = () => {
   const mounted_prop = useRef(true); // Initial value _isMounted = true
 
   useEffect(() => {
     return () => {
-      // ComponentWillUnmount in Class Component
       mounted_prop.current = false;
     };
   }, []);
@@ -61,7 +61,7 @@ const Tab1 = () => {
     get_location().then((url) => {
       http_get(url).then((response) => {
         var weather_obj = JSON.parse(JSON.stringify(response));
-        //while (!mounted_prop.current) {}
+        db_set("weather_obj", weather_obj);
         set_weather_data(weather_obj);
       });
     });
@@ -94,6 +94,7 @@ const Tab1 = () => {
           if (mounted_prop.current)
             setCols((cols) => [...cols, parsed_data[i]]);
         }
+        db_set("dashboard_obj", parsed_data);
         old_obj = response.data;
       })
       .catch((err) => {
@@ -113,6 +114,15 @@ const Tab1 = () => {
     }, 2000);
   }, []);
 
+  useEffect(() => {
+    db_get("weather_obj").then((response) => {
+      if (response) set_weather_data(response);
+    });
+    db_get("dashboard_obj").then((res) => {
+      if (res) setCols(res);
+    });
+  }, []);
+  
   return (
     <IonPage>
       <IonContent fullscreen>

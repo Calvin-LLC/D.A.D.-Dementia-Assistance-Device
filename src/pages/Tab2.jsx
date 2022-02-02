@@ -16,11 +16,16 @@ import {
   IonCard,
   IonLabel,
   IonListHeader,
+  IonItemDivider,
+  useIonPicker,
+  IonSelect,
+  IonSelectOption,
 } from "@ionic/react";
 import { useState, useEffect, useRef } from "react";
 import "./Tab2.css";
-import { get_reminder_data, send_reminder_data, remove_reminder_data } from "./data";
+import { get_reminder_data, send_reminder_data, remove_reminder_data } from "../componets/data";
 import { format, parseISO } from "date-fns";
+import { db_set, db_get } from "../componets/storage";
 
 const Tab2 = () => {
   const mounted_prop = useRef(true);
@@ -33,7 +38,11 @@ const Tab2 = () => {
 
   const reminder_data = useRef(null);
   const [selectedDate, setSelectedDate] = useState();
+  const selectedTime = useRef(null);
   const [cols, setCols] = useState([]);
+  const [present] = useIonPicker();
+  const [value, setValue] = useState('');
+
 
   var old_obj = new Array();
   var parsed_obj = new Array();
@@ -47,6 +56,7 @@ const Tab2 = () => {
         parsed_obj[i] = {date : format(parseISO(response.data[i].date), 'PPPPpppp'), reminder : response.data[i].reminder};
         setCols((cols) => [...cols, parsed_obj[i]]);
       }
+      db_set("reminder_obj", parsed_obj);
       old_obj = response.data;
     }).catch((err) => {
       console.log("Error caught: " + err);
@@ -58,23 +68,25 @@ const Tab2 = () => {
 
     if (!reminder_msg || !selectedDate) return;
 
-    send_reminder_data({ date: selectedDate, reminder: reminder_msg }).then(
+    send_reminder_data({ date: selectedDate, reminder: reminder_msg, minutes_before : value }).then(
       () => {
         update_reminder();
+        reminder_data.current.value = "";
       }
     );
   };
-
-  const delete_reminder = (i) => {
-    console.log(i);
-    remove_reminder_data(i);
-  }
 
   useEffect(() => {
     setInterval(() => {
       if (!mounted_prop.current) return;
       update_reminder();
     }, 2000);
+  }, []);
+
+  useEffect(() => {
+    db_get("reminder_obj").then((response) => {
+      if (response) setCols(response);
+    });
   }, []);
 
   return (
@@ -93,13 +105,14 @@ const Tab2 = () => {
               </IonListHeader>
               <IonItem lines="full">
                 <IonLabel>{"- " + col.reminder}</IonLabel>
-              </IonItem>
-              <IonButton slot="end" onClick={() => {
-                delete_reminder(i);
+                <IonButton slot="end" onClick={() => {
+                remove_reminder_data(i);
               }}>X</IonButton>
+              </IonItem>
             </div>
           ))}
 
+          <IonItemDivider/>
           <IonDatetime
             value={selectedDate}
             showClearButton
@@ -107,6 +120,25 @@ const Tab2 = () => {
           >
             <div slot="title">Reminder Date and Time</div>
           </IonDatetime>
+          <IonItem>
+            <IonLabel>Minutes Before</IonLabel>
+            <IonSelect value={value} placeholder="Select One" onIonChange={e => setValue(e.detail.value)}>
+              <IonSelectOption value={0}>0</IonSelectOption>
+              <IonSelectOption value={1}>1</IonSelectOption>
+              <IonSelectOption value={5}>5</IonSelectOption>
+              <IonSelectOption value={10}>10</IonSelectOption>
+              <IonSelectOption value={15}>15</IonSelectOption>
+              <IonSelectOption value={20}>20</IonSelectOption>
+              <IonSelectOption value={25}>25</IonSelectOption>
+              <IonSelectOption value={30}>30</IonSelectOption>
+              <IonSelectOption value={35}>35</IonSelectOption>
+              <IonSelectOption value={40}>40</IonSelectOption>
+              <IonSelectOption value={45}>45</IonSelectOption>
+              <IonSelectOption value={50}>50</IonSelectOption>
+              <IonSelectOption value={55}>55</IonSelectOption>
+              <IonSelectOption value={60}>60</IonSelectOption>
+            </IonSelect>
+          </IonItem>
 
           <IonItem>
             <IonInput ref={reminder_data} placeholder="Reminder message" />

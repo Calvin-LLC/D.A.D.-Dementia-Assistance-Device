@@ -24,10 +24,22 @@ import {
   useIonAlert,
 } from "@ionic/react";
 
-import { arrowForwardOutline, eyeOutline, eyeOffOutline, banOutline } from "ionicons/icons";
-
+import {
+  arrowForwardOutline,
+  eyeOutline,
+  eyeOffOutline,
+  banOutline,
+} from "ionicons/icons";
+import { Storage } from "@ionic/storage";
 import { useHistory } from "react-router-dom";
-import { data_send, data_recieve, http_post, save_login, is_logged_in } from "./data";
+import {
+  data_send,
+  data_recieve,
+  http_post,
+  save_login,
+  is_logged_in,
+} from "../componets/data";
+import { db_init, db_set, db_get } from "../componets/storage";
 import { UserContext } from "../App";
 
 const Login = (props) => {
@@ -44,7 +56,36 @@ const Login = (props) => {
 
   // website
   var server_url = "https://ziadabdelati.com/check.php";
-  
+
+  const initial_login = () => {
+    db_get("username").then((response) => {
+      const username = response;
+      db_get("password").then((res) => {
+        const password = res;
+        
+        if (!username || !password) return;
+
+        var obj = {
+          email: username,
+          pword: password,
+          type: "login",
+        };
+
+        http_post(server_url, obj).then((response) => {
+          if (response.search(240) != -1) {
+            save_login(obj);
+            user.setIsLoggedIn(true);
+          } else {
+            console.log(response);
+            login_status("Incorrect Username or password, please try again", [
+              { text: "Ok" },
+            ]);
+          }
+        });
+      });
+    });
+  };
+
   const send = () => {
     const username = username_ref.current.value; // the ? after current checks if the connections (refs) exists or not, an ! means we garauntee the fact that the value exists
     const password = password_ref.current.value;
@@ -52,18 +93,22 @@ const Login = (props) => {
     if (!username || !password) return;
 
     var obj = {
-      "email" : username,
-      "pword" : password,
-      "type"  : "login"
+      email: username,
+      pword: password,
+      type: "login",
     };
 
     http_post(server_url, obj).then((response) => {
       if (response.search(240) != -1) {
+        db_set("username", username);
+        db_set("password", password);
         save_login(obj);
         user.setIsLoggedIn(true);
       } else {
         console.log(response);
-        login_status('Incorrect Username or password, please try again', [{ text: 'Ok' }]);
+        login_status("Incorrect Username or password, please try again", [
+          { text: "Ok" },
+        ]);
       }
     });
   };
@@ -73,22 +118,27 @@ const Login = (props) => {
     const password = password_ref.current.value;
 
     if (!username || !password) return;
-    
+
     var obj = {
-      "email" : username,
-      "pword" : password,
-      "type"  : "login"
+      email: username,
+      pword: password,
+      type: "login",
     };
-    
+
     http_post(server_url, obj).then((response) => {
-      login_status('Account successfully registered!', [{ text: 'Ok' }]);
+      login_status("Account successfully registered!", [{ text: "Ok" }]);
     });
-  }
+  };
 
   const toggle_pass = () => {
     set_show_pass(!show_pass);
     set_pass_shown(show_pass ? "text" : "password");
-  }
+  };
+
+  useEffect(() => {
+    db_init();
+    initial_login();
+  }, []);
 
   return (
     <IonPage>
@@ -104,7 +154,12 @@ const Login = (props) => {
             <IonCol>
               <IonItem>
                 <IonLabel position="floating">Email</IonLabel>
-                <IonInput clearInput={true} type="email" placeholder="email" ref={username_ref}></IonInput>
+                <IonInput
+                  clearInput={true}
+                  type="email"
+                  placeholder="email"
+                  ref={username_ref}
+                ></IonInput>
               </IonItem>
             </IonCol>
           </IonRow>
@@ -113,12 +168,21 @@ const Login = (props) => {
             <IonCol>
               <IonItem>
                 <IonLabel position="floating">Password</IonLabel>
-                <IonInput clearOnEdit={false} type={pass_shown} placeholder="password" ref={password_ref}></IonInput>
+                <IonInput
+                  clearOnEdit={false}
+                  type={pass_shown}
+                  placeholder="password"
+                  ref={password_ref}
+                ></IonInput>
                 {!show_pass && (
-                <IonIcon onClick={toggle_pass} slot="end" icon={eyeOutline}/>
+                  <IonIcon onClick={toggle_pass} slot="end" icon={eyeOutline} />
                 )}
                 {show_pass && (
-                <IonIcon onClick={toggle_pass} slot="end" icon={eyeOffOutline}/>
+                  <IonIcon
+                    onClick={toggle_pass}
+                    slot="end"
+                    icon={eyeOffOutline}
+                  />
                 )}
               </IonItem>
             </IonCol>

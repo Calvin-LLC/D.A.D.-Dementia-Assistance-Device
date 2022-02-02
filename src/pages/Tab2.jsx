@@ -41,7 +41,7 @@ const Tab2 = () => {
   const selectedTime = useRef(null);
   const [cols, setCols] = useState([]);
   const [present] = useIonPicker();
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(0);
 
 
   var old_obj = new Array();

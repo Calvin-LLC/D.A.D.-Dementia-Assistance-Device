@@ -40,11 +40,20 @@
         "clobbers": [
           "PositionError"
         ]
+        },
+      {
+          "id": "@ionic-enterprise/secure-storage.SQLitePlugin",
+          "file": "plugins/@ionic-enterprise/secure-storage/www/SQLitePlugin.js",
+          "pluginId": "@ionic-enterprise/secure-storage",
+        "clobbers": [
+          "SQLitePlugin"
+        ]
         }
     ];
     module.exports.metadata =
     // TOP OF METADATA
     {
+      "@ionic-enterprise/secure-storage": "2.2.3",
       "cordova-plugin-calendar": "5.1.6",
       "cordova-plugin-geolocation": "4.1.0"
     };

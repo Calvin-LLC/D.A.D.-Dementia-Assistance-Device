@@ -19,8 +19,9 @@ import {
 } from "@ionic/react";
 import "./Tab3.css";
 import { useEffect, useRef, useState } from "react";
-import { get_reminder_contact, send_reminder_contact, remove_reminder_contact } from "../componets/data";
+import { get_reminder_contact, send_reminder_contact, remove_reminder_contact, get_geolocation, send_geolocation, to_object } from "../componets/data";
 import { db_set, db_get } from "../componets/storage";
+import { Geolocation } from "@ionic-native/geolocation";
 
 const Tab3 = () => {
   const mounted_prop = useRef(true);
@@ -75,6 +76,18 @@ const Tab3 = () => {
       });
   };
 
+  const [current_location, set_current_location] = useState();
+  const set_location = async () => {
+    // get current location from geolocation plugin
+    const coords = await Geolocation.getCurrentPosition();
+
+    // convert it to an obj and send to server
+    await send_geolocation(to_object(coords), true);
+
+    var response = await get_geolocation();
+    set_current_location(response.coords);
+  }
+
   useEffect(() => {
     setInterval(() => {
       if (!mounted_prop.current) return;
@@ -125,6 +138,15 @@ const Tab3 = () => {
               placeholder="Reminder Email / Phone"
             />
             <IonButton onClick={add_reminder_person}>Add Contact</IonButton>
+          </IonItem>
+
+          {current_location && (<IonItem>
+            <div>{"Lat: " + current_location.latitude + ", Long: " + current_location.longitude + ", accuracy: " + current_location.accuracy}</div>
+          </IonItem>)}
+          <IonItem>
+            <IonButton onClick={set_location}>
+              Set Current Location as home
+            </IonButton>
           </IonItem>
         </IonList>
       </IonContent>

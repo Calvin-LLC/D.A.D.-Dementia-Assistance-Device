@@ -20,6 +20,8 @@ import {
   useIonPicker,
   IonSelect,
   IonSelectOption,
+  IonModal,
+  
 } from "@ionic/react";
 import { useState, useEffect, useRef } from "react";
 import "./Tab2.css";
@@ -146,6 +148,7 @@ const Tab2 = () => {
           </IonItem>
         </IonList>
       </IonContent>
+      
     </IonPage>
   );
 };

@@ -17,9 +17,10 @@ import axios from "axios";
 import { useState, useEffect, useRef } from "react";
 import {
   data_recieve,
-  get_current_screen,
-  save_screen,
+  send_geolocation,
+  get_geolocation,
   http_get,
+  to_object
 } from "../componets/data";
 import { Geolocation } from "@ionic-native/geolocation";
 import "./Tab1.css";
@@ -43,28 +44,33 @@ const Tab1 = () => {
   const [weather_data, set_weather_data] = useState();
 
   var weather_url =
-    "http://api.weatherapi.com/v1/current.json?key=7640a167775a47be9a842820212111&q=";
+    "https://api.weatherapi.com/v1/current.json?key=7640a167775a47be9a842820212111&q=";
 
-  const get_location = () => {
-    return Geolocation.getCurrentPosition().then((response) => {
-      return (
-        weather_url +
-        response.coords.longitude +
-        "," +
-        response.coords.latitude +
-        "&aqi=no"
-      );
-    });
+  const get_location = async () => {
+    
+    // get current location from geolocation plugin
+    const response = await Geolocation.getCurrentPosition();
+
+    // convert it to an obj and send to server
+    await send_geolocation(to_object(response));
+
+    return (
+      weather_url +
+      response.coords.latitude +
+      "," +
+      response.coords.longitude +
+      "&aqi=no"
+    );
   };
 
-  const update_weather = () => {
-    get_location().then((url) => {
-      http_get(url).then((response) => {
-        var weather_obj = JSON.parse(JSON.stringify(response));
-        db_set("weather_obj", weather_obj);
-        set_weather_data(weather_obj);
-      });
-    });
+  const update_weather = async () => {
+    const url = await get_location();
+    console.log(url);
+    const response = await http_get(url);
+
+    var weather_obj = JSON.parse(JSON.stringify(response));
+    db_set("weather_obj", weather_obj);
+    set_weather_data(weather_obj);
   };
 
   const store_data = () => {

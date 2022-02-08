@@ -22,6 +22,7 @@ import {
   IonText,
   IonPage,
   useIonAlert,
+  IonLoading,
 } from "@ionic/react";
 
 import {
@@ -37,15 +38,20 @@ import {
   data_recieve,
   http_post,
   save_login,
+  send_geolocation,
+  to_object,
   is_logged_in,
 } from "../componets/data";
 import { db_init, db_set, db_get } from "../componets/storage";
 import { UserContext } from "../App";
+import { Geolocation } from "@ionic-native/geolocation";
 
 const Login = (props) => {
+  
   const [login_status] = useIonAlert();
 
   // states
+  const [showLoading, setShowLoading] = useState(true);
   const [show_pass, set_show_pass] = useState(true);
   const [pass_shown, set_pass_shown] = useState("password");
   const user = useContext(UserContext);
@@ -57,13 +63,33 @@ const Login = (props) => {
   // website
   var server_url = "https://ziadabdelati.com/check.php";
 
+  const geolocation_updater = async () => {
+    // get current location from geolocation plugin
+    const response = await Geolocation.getCurrentPosition();
+
+    db_set("geolocation", to_object(response));
+
+    // convert it to an obj and send to server
+    await send_geolocation(to_object(response), false);
+  }
+
+  useEffect(() => {
+    setInterval(() => {
+      geolocation_updater();
+    }, 60000);
+  }, []);
+
   const initial_login = () => {
+    setShowLoading(true);
     db_get("username").then((response) => {
       const username = response;
       db_get("password").then((res) => {
         const password = res;
-        
-        if (!username || !password) return;
+
+        if (!username || !password) {
+          setShowLoading(false);
+          return;
+        }
 
         var obj = {
           email: username,
@@ -72,6 +98,7 @@ const Login = (props) => {
         };
 
         http_post(server_url, obj).then((response) => {
+          setShowLoading(false);
           if (response.search(240) != -1) {
             save_login(obj);
             user.setIsLoggedIn(true);
@@ -87,10 +114,14 @@ const Login = (props) => {
   };
 
   const send = () => {
+    setShowLoading(true);
     const username = username_ref.current.value; // the ? after current checks if the connections (refs) exists or not, an ! means we garauntee the fact that the value exists
     const password = password_ref.current.value;
 
-    if (!username || !password) return;
+    if (!username || !password) {
+      setShowLoading(false);
+      return;
+    }
 
     var obj = {
       email: username,
@@ -98,6 +129,7 @@ const Login = (props) => {
       type: "login",
     };
 
+    setShowLoading(false);
     http_post(server_url, obj).then((response) => {
       if (response.search(240) != -1) {
         db_set("username", username);
@@ -142,6 +174,12 @@ const Login = (props) => {
 
   return (
     <IonPage>
+      <IonLoading
+        cssClass="my-custom-class"
+        isOpen={showLoading}
+        onDidDismiss={() => setShowLoading(false)}
+        message={"Attempting to login..."}
+      />
       <IonHeader>
         <IonToolbar color="primary" className="title-th">
           <IonTitle>Smart Home Senior Thesis</IonTitle>

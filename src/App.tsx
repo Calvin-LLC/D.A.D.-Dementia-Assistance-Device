@@ -1,5 +1,6 @@
 import { Redirect, Route } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
+import React from "react";
 import {
   IonApp,
   IonIcon,
@@ -36,20 +37,12 @@ import "./theme/variables.css";
 import Login from "./pages/login";
 import TabManager from "./pages/TabManager";
 
-import {
-  gridSharp,
-  alarmSharp,
-  settingsSharp,
-  logInOutline,
-} from "ionicons/icons";
-import React from "react";
-
 interface IUserManager {
   setIsLoggedIn: Function;
 }
 
 const user: IUserManager = {
-  setIsLoggedIn: () => {}
+  setIsLoggedIn: () => {},
 };
 
 export const UserContext = React.createContext<IUserManager>(user);
@@ -60,13 +53,13 @@ const App = () => {
   const user = useContext(UserContext);
 
   user.setIsLoggedIn = setIsLoggedIn;
-  
+
   return (
     <IonApp>
       <IonReactRouter>
-      <Route path="/login" component={Login} exact={true} />
-      <Route path="/" component={isLoggedIn ? TabManager : Login} />
-    </IonReactRouter>
+        <Route path="/login" component={Login} exact={true} />
+        <Route path="/" component={isLoggedIn ? TabManager : Login} />
+      </IonReactRouter>
     </IonApp>
   );
 };

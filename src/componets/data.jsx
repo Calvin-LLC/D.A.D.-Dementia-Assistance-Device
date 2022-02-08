@@ -140,3 +140,46 @@ export const get_reminder_contact = () => {
     return response;
   });
 };
+
+// geolocation -> json
+export const to_object = (obj) => {
+  if (obj === null || !(obj instanceof Object)) return obj;
+  var temp = (obj instanceof Array) ? [] : {};
+  for (var key in obj) temp[key] = to_object(obj[key]);
+  return temp;
+}
+
+// sends location object to the server 
+export const send_geolocation = (location, set_home_location) => {
+  return get_geolocation().then((response) => {
+    var new_obj = template;
+    new_obj.type = "send_geolocation";
+    //new_obj.post = '{"data":[{"contact":"' + contact + '"}],"success":1}';
+    
+    if (response.length == 0) {
+      var post_obj = {"home": {"longitude":100, "latitude":100}, "current": {"longitude":100, "latitude":100},"success":1};
+      new_obj.post = JSON.stringify(post_obj);  
+    } else if (set_home_location == false) {
+      var post_obj = response;
+      post_obj.current = location;
+      new_obj.post = JSON.stringify(post_obj);
+    } else if (set_home_location == true) {
+      var post_obj = response;
+      post_obj.current = location;
+      post_obj.home    = location;
+      new_obj.post = JSON.stringify(post_obj);
+    }
+    return http_post(login_url, new_obj).then((res) => {
+      return res;
+    });
+  })
+}
+
+// get the geolocation object from the server
+export const get_geolocation = () => {
+  var new_obj = template;
+  new_obj.type = "get_geolocation";
+  return http_post(login_url, new_obj).then((response) => {
+    return response;
+  });
+}

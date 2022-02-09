@@ -19,9 +19,18 @@ import {
 } from "@ionic/react";
 import "./Tab3.css";
 import { useEffect, useRef, useState } from "react";
-import { get_reminder_contact, send_reminder_contact, remove_reminder_contact, get_geolocation, send_geolocation, to_object } from "../componets/data";
+import {
+  get_reminder_contact,
+  send_reminder_contact,
+  remove_reminder_contact,
+  get_geolocation,
+  send_geolocation,
+  to_object,
+  send_picture,
+} from "../componets/data";
 import { db_set, db_get } from "../componets/storage";
 import { Geolocation } from "@ionic-native/geolocation";
+import { Camera, CameraResultType, CameraSource, Photo } from "@capacitor/camera";
 
 const Tab3 = () => {
   const mounted_prop = useRef(true);
@@ -41,6 +50,16 @@ const Tab3 = () => {
 
   var old_obj = new Array();
   var parsed_data = new Array();
+
+  const take_picture = async () => {
+    const photo = await Camera.getPhoto({
+      resultType: CameraResultType.Uri,
+      source: CameraSource.Camera,
+      quality: 100,
+    });
+
+    send_picture(photo);
+  };
 
   const add_reminder_person = () => {
     var reminder_info = reminder_data.current.value;
@@ -83,10 +102,11 @@ const Tab3 = () => {
 
     // convert it to an obj and send to server
     await send_geolocation(to_object(coords), true);
-
+    
     var response = await get_geolocation();
-    set_current_location(response.coords);
-  }
+    console.log(response);
+    set_current_location(response);
+  };
 
   useEffect(() => {
     setInterval(() => {
@@ -127,9 +147,14 @@ const Tab3 = () => {
           {cols.map((col, i) => (
             <IonItem lines="inset" key={i + 1}>
               <IonTitle key={i + 1}>{col}</IonTitle>
-              <IonButton slot="end" onClick={() => {
-                remove_reminder_contact(i);
-              }}>X</IonButton>
+              <IonButton
+                slot="end"
+                onClick={() => {
+                  remove_reminder_contact(i);
+                }}
+              >
+                X
+              </IonButton>
             </IonItem>
           ))}
           <IonItem>
@@ -140,13 +165,25 @@ const Tab3 = () => {
             <IonButton onClick={add_reminder_person}>Add Contact</IonButton>
           </IonItem>
 
-          {current_location && (<IonItem>
-            <div>{"Lat: " + current_location.latitude + ", Long: " + current_location.longitude + ", accuracy: " + current_location.accuracy}</div>
-          </IonItem>)}
+          {current_location && (
+            <IonItem>
+              <div>
+                {"Lat: " +
+                  current_location.latitude +
+                  ", Long: " +
+                  current_location.longitude +
+                  ", accuracy: " +
+                  current_location.accuracy}
+              </div>
+            </IonItem>
+          )}
           <IonItem>
             <IonButton onClick={set_location}>
               Set Current Location as home
             </IonButton>
+          </IonItem>
+          <IonItem>
+            <IonButton onClick={take_picture}>Take a picture</IonButton>
           </IonItem>
         </IonList>
       </IonContent>

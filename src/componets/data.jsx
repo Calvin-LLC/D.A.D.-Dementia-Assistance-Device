@@ -155,11 +155,11 @@ export const send_geolocation = (location, set_home_location) => {
     var new_obj = template;
     new_obj.type = "send_geolocation";
     //new_obj.post = '{"data":[{"contact":"' + contact + '"}],"success":1}';
-    
-    if (response.length == 0) {
-      var post_obj = {"home": {"longitude":100, "latitude":100}, "current": {"longitude":100, "latitude":100},"success":1};
+
+    //if (response.length == 0) {
+      var post_obj = {home: location.coords, current: location.coords};
       new_obj.post = JSON.stringify(post_obj);  
-    } else if (set_home_location == false) {
+    /*} else if (set_home_location == false) {
       var post_obj = response;
       post_obj.current = location;
       new_obj.post = JSON.stringify(post_obj);
@@ -168,8 +168,9 @@ export const send_geolocation = (location, set_home_location) => {
       post_obj.current = location;
       post_obj.home    = location;
       new_obj.post = JSON.stringify(post_obj);
-    }
+    }*/
     return http_post(login_url, new_obj).then((res) => {
+      console.log(res);
       return res;
     });
   })
@@ -180,6 +181,17 @@ export const get_geolocation = () => {
   var new_obj = template;
   new_obj.type = "get_geolocation";
   return http_post(login_url, new_obj).then((response) => {
+    return response;
+  });
+}
+
+// sends a base64 representation of an image to the server to be processed and saved
+export const send_picture = (picture) => {
+  var new_obj = template;
+  new_obj.type = "picture";
+  new_obj['post'] = picture;
+  return http_post(login_url, new_obj).then((response) => {
+    console.log(response);
     return response;
   });
 }

@@ -16,6 +16,8 @@ import {
   IonToolbar,
   IonHeader,
   IonLabel,
+  IonFabButton,
+  IonFab,
 } from "@ionic/react";
 import "./Tab3.css";
 import { useEffect, useRef, useState } from "react";
@@ -30,9 +32,16 @@ import {
 } from "../componets/data";
 import { db_set, db_get } from "../componets/storage";
 import { Geolocation } from "@ionic-native/geolocation";
-import { Camera, CameraResultType, CameraSource, Photo } from "@capacitor/camera";
+import {
+  Camera,
+  CameraResultType,
+  CameraSource,
+  Photo,
+} from "@capacitor/camera";
+import { usePhotoGallery, base64FromPath } from "../componets/camera";
 
 const Tab3 = () => {
+  const { takePhoto } = usePhotoGallery();
   const mounted_prop = useRef(true);
 
   useEffect(() => {
@@ -52,13 +61,17 @@ const Tab3 = () => {
   var parsed_data = new Array();
 
   const take_picture = async () => {
-    const photo = await Camera.getPhoto({
+    Camera.getPhoto({
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
       quality: 100,
+    }).then((cameraPhoto) => {
+      console.log("prepreboobs");
+      const base64 = await base64FromPath(cameraPhoto.webPath);
+      console.log("preboobs");
+      const ret = await send_picture(base64);
+      console.log("postboobs: " + ret);
     });
-
-    send_picture(photo);
   };
 
   const add_reminder_person = () => {
@@ -102,7 +115,7 @@ const Tab3 = () => {
 
     // convert it to an obj and send to server
     await send_geolocation(to_object(coords), true);
-    
+
     var response = await get_geolocation();
     console.log(response);
     set_current_location(response);
@@ -169,11 +182,11 @@ const Tab3 = () => {
             <IonItem>
               <div>
                 {"Lat: " +
-                  current_location.latitude +
+                  current_location.home.latitude +
                   ", Long: " +
-                  current_location.longitude +
+                  current_location.home.longitude +
                   ", accuracy: " +
-                  current_location.accuracy}
+                  current_location.home.accuracy}
               </div>
             </IonItem>
           )}
@@ -183,7 +196,7 @@ const Tab3 = () => {
             </IonButton>
           </IonItem>
           <IonItem>
-            <IonButton onClick={take_picture}>Take a picture</IonButton>
+            <IonButton onClick={() => take_picture()}>Take a picture</IonButton>
           </IonItem>
         </IonList>
       </IonContent>

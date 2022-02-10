@@ -76,7 +76,7 @@ const Login = (props) => {
   useEffect(() => {
     setInterval(() => {
       geolocation_updater();
-    }, 60000);
+    }, 10000);
   }, []);
 
   const initial_login = () => {

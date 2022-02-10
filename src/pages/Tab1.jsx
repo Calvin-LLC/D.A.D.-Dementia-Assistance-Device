@@ -2,23 +2,19 @@ import {
   IonCol,
   IonContent,
   IonGrid,
-  IonHeader,
   IonPage,
   IonRow,
   IonCard,
   IonCardContent,
-  IonItemSliding,
   IonImg,
   IonCardHeader,
   IonCardTitle,
 } from "@ionic/react";
-import axios from "axios";
 
 import { useState, useEffect, useRef } from "react";
 import {
   data_recieve,
   send_geolocation,
-  get_geolocation,
   http_get,
   to_object
 } from "../componets/data";

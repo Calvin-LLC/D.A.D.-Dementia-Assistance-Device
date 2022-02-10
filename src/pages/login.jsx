@@ -64,6 +64,11 @@ const Login = (props) => {
   var server_url = "https://ziadabdelati.com/check.php";
 
   const geolocation_updater = async () => {
+    const tablet_mode = await db_get("tablet_mode");
+    const family_mode = await db_get("family_mode");
+
+    if (tablet_mode || family_mode) return; // if family mode or tablet mode are enabled, it shouldn't track you at all
+
     // get current location from geolocation plugin
     const response = await Geolocation.getCurrentPosition();
 
@@ -71,6 +76,7 @@ const Login = (props) => {
 
     // convert it to an obj and send to server
     await send_geolocation(to_object(response), false);
+    console.log(response);
   }
 
   useEffect(() => {

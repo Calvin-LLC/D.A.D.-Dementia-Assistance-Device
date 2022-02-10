@@ -1,23 +1,16 @@
 import {
   IonContent,
-  IonItemDivider,
   IonPage,
   IonToast,
   IonList,
   IonItem,
-  IonRow,
-  IonCol,
   IonInput,
   IonButton,
-  IonGrid,
-  IonCard,
-  IonCardContent,
   IonTitle,
   IonToolbar,
   IonHeader,
   IonLabel,
-  IonFabButton,
-  IonFab,
+  IonCheckbox,
 } from "@ionic/react";
 import "./Tab3.css";
 import { useEffect, useRef, useState } from "react";
@@ -32,16 +25,13 @@ import {
 } from "../componets/data";
 import { db_set, db_get } from "../componets/storage";
 import { Geolocation } from "@ionic-native/geolocation";
-import {
-  Camera,
-  CameraResultType,
-  CameraSource,
-  Photo,
-} from "@capacitor/camera";
-import { usePhotoGallery, base64FromPath } from "../componets/camera";
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
+import { base64FromPath } from "../componets/camera";
+
+// for contact system, give option for user & family member
+// carrier dropdown, it's in e_message.py
 
 const Tab3 = () => {
-  const { takePhoto } = usePhotoGallery();
   const mounted_prop = useRef(true);
 
   useEffect(() => {
@@ -56,22 +46,20 @@ const Tab3 = () => {
   const [cols, setCols] = useState([]);
   const [toast_data, set_toast_data] = useState();
   const [toast_data2, set_toast_data2] = useState();
+  const [family_mode, set_family_mode] = useState(false);
+  const [tablet_mode, set_tablet_mode] = useState(false);
 
   var old_obj = new Array();
   var parsed_data = new Array();
 
   const take_picture = async () => {
-    Camera.getPhoto({
+    const cameraPhoto = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
       quality: 100,
-    }).then((cameraPhoto) => {
-      console.log("prepreboobs");
-      const base64 = await base64FromPath(cameraPhoto.webPath);
-      console.log("preboobs");
-      const ret = await send_picture(base64);
-      console.log("postboobs: " + ret);
     });
+    let base64 = await base64FromPath(cameraPhoto.webPath);
+    send_picture(base64);
   };
 
   const add_reminder_person = () => {
@@ -121,6 +109,16 @@ const Tab3 = () => {
     set_current_location(response);
   };
 
+  const family_manager = async () => {
+    set_family_mode(!family_mode);
+    await db_set("family_mode", !family_mode);
+  };
+
+  const tablet_manager = async () => {
+    set_tablet_mode(!tablet_mode);
+    await db_set("tablet_mode", !tablet_mode);
+  };
+
   useEffect(() => {
     setInterval(() => {
       if (!mounted_prop.current) return;
@@ -132,6 +130,13 @@ const Tab3 = () => {
     db_get("contact_obj").then((response) => {
       if (response) setCols(response);
     });
+    db_get("family_mode").then((response) => {
+      if (response != null) set_family_mode(response);
+    });
+    db_get("tablet_mode").then((response) => {
+      if (response != null) set_tablet_mode(response);
+    });
+    console.log("updated objs");
   }, []);
 
   return (
@@ -190,13 +195,29 @@ const Tab3 = () => {
               </div>
             </IonItem>
           )}
-          <IonItem>
-            <IonButton onClick={set_location}>
-              Set Current Location as home
-            </IonButton>
-          </IonItem>
+          {family_mode && (
+            <IonItem>
+              <IonButton onClick={set_location}>
+                Set Current Location as home
+              </IonButton>
+            </IonItem>
+          )}
           <IonItem>
             <IonButton onClick={() => take_picture()}>Take a picture</IonButton>
+          </IonItem>
+          <IonItem>
+            <IonLabel>Family Mode</IonLabel>
+            <IonCheckbox
+              checked={family_mode}
+              onIonChange={family_manager}
+            ></IonCheckbox>
+          </IonItem>
+          <IonItem>
+            <IonLabel>Tablet Mode</IonLabel>
+            <IonCheckbox
+              checked={tablet_mode}
+              onIonChange={tablet_manager}
+            ></IonCheckbox>
           </IonItem>
         </IonList>
       </IonContent>

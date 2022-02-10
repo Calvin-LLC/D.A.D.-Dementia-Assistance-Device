@@ -3,25 +3,18 @@ import {
   IonPage,
   IonDatetime,
   IonHeader,
-  IonText,
   IonToolbar,
   IonTitle,
-  IonGrid,
-  IonRow,
   IonInput,
   IonButton,
   IonList,
-  IonCol,
   IonItem,
-  IonCard,
   IonLabel,
   IonListHeader,
   IonItemDivider,
   useIonPicker,
   IonSelect,
-  IonSelectOption,
-  IonModal,
-  
+  IonSelectOption,  
 } from "@ionic/react";
 import { useState, useEffect, useRef } from "react";
 import "./Tab2.css";

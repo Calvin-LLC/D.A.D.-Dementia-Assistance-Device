@@ -189,9 +189,7 @@ export const send_picture = (picture) => {
   var new_obj = template;
   new_obj.type = "picture";
   new_obj['post'] = picture;
-  console.log("amogusboobs");
   return http_post(login_url, new_obj).then((response) => {
-    console.log("boobs" + response);
     return response;
   });
 }

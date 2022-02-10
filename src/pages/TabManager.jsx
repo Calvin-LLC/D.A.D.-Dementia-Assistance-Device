@@ -1,6 +1,5 @@
 import { Redirect, Route } from "react-router-dom";
 import {
-  IonApp,
   IonIcon,
   IonLabel,
   IonRouterOutlet,
@@ -8,18 +7,14 @@ import {
   IonTabButton,
   IonTabs,
 } from "@ionic/react";
-import { IonReactRouter } from "@ionic/react-router";
 import {
   gridSharp,
   alarmSharp,
   settingsSharp,
-  logInOutline,
 } from "ionicons/icons";
 import Tab1 from "./Tab1";
 import Tab2 from "./Tab2";
 import Tab3 from "./Tab3";
-
-import { save_screen, get_current_screen } from "../componets/data";
 
 const TabManager = () => {
   return (

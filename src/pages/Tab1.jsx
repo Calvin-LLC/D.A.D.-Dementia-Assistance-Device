@@ -9,6 +9,7 @@ import {
   IonImg,
   IonCardHeader,
   IonCardTitle,
+  IonText,
 } from "@ionic/react";
 
 import { useState, useEffect, useRef } from "react";
@@ -16,11 +17,13 @@ import {
   data_recieve,
   send_geolocation,
   http_get,
-  to_object
+  to_object,
+  get_geolocation,
 } from "../componets/data";
 import { Geolocation } from "@ionic-native/geolocation";
 import "./Tab1.css";
 import { db_get, db_set } from "../componets/storage";
+import { location } from "ionicons/icons";
 
 const Tab1 = () => {
   const mounted_prop = useRef(true); // Initial value _isMounted = true
@@ -37,13 +40,13 @@ const Tab1 = () => {
   var old_obj = new Array();
   var parsed_data = new Array();
 
+  const [tracker, set_tracker] = useState();
   const [weather_data, set_weather_data] = useState();
 
   var weather_url =
     "https://api.weatherapi.com/v1/current.json?key=7640a167775a47be9a842820212111&q=";
 
   const get_location = async () => {
-    
     // get current location from geolocation plugin
     const response = await Geolocation.getCurrentPosition();
 
@@ -104,6 +107,14 @@ const Tab1 = () => {
       });
   };
 
+  const tracker_update = async () => {
+    const location_obj = await get_geolocation();
+    if (!location_obj) return;
+    db_set("location_obj", location_obj.current);
+    set_tracker(location_obj.current);
+    console.log(location_obj.current);
+  };
+
   var weather_isupdated = false;
   useEffect(() => {
     setInterval(() => {
@@ -113,6 +124,7 @@ const Tab1 = () => {
         update_weather();
         weather_isupdated = true;
       }
+      tracker_update();
     }, 2000);
   }, []);
 
@@ -120,11 +132,14 @@ const Tab1 = () => {
     db_get("weather_obj").then((response) => {
       if (response) set_weather_data(response);
     });
+    db_get("location_obj").then((r) => {
+      if (r) set_tracker(r);
+    });
     db_get("dashboard_obj").then((res) => {
       if (res) setCols(res);
     });
   }, []);
-  
+
   return (
     <IonPage>
       <IonContent fullscreen>
@@ -135,7 +150,7 @@ const Tab1 = () => {
                 <IonCard>
                   <IonCardHeader>
                     <IonCardHeader>
-                      <IonCardTitle>
+                      <IonCardTitle color="dark">
                         {weather_data.location.name +
                           ", " +
                           weather_data.location.region}
@@ -143,13 +158,13 @@ const Tab1 = () => {
                     </IonCardHeader>
                   </IonCardHeader>
                   <IonCardContent>
-                    <h2>
+                    <IonText color="dark">
                       {"Condition: " + weather_data.current.condition.text}
                       <br />
                       {"Current Temp: " + weather_data.current.temp_f + "℉"}
                       <br />
                       {"Feels Like: " + weather_data.current.feelslike_f + "℉"}
-                    </h2>
+                    </IonText>
                     <IonImg
                       className="weather-img"
                       src={weather_data.current.condition.icon}
@@ -160,11 +175,29 @@ const Tab1 = () => {
               </IonCol>
             </IonRow>
           )}
+          {tracker && (
+            <IonRow>
+              <IonCol>
+                <IonCard>
+                  <IonCardHeader>
+                    <IonCardContent>
+                      {"latitude: " + tracker.latitude}
+                    </IonCardContent>
+                    <IonCardContent>
+                      {"\nlongitude: " + tracker.longitude}
+                    </IonCardContent>
+                  </IonCardHeader>
+                </IonCard>
+              </IonCol>
+            </IonRow>
+          )}
           <IonRow>
             {cols.map((col, i) => (
               <IonCol size="6" key={i + 1}>
                 <IonCard key={i + 1}>
-                  <IonCardContent key={i + 1}>{col}</IonCardContent>
+                  <IonCardContent color="dark" key={i + 1}>
+                    {col}
+                  </IonCardContent>
                 </IonCard>
               </IonCol>
             ))}

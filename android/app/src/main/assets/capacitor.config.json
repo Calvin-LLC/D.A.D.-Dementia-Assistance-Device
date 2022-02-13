@@ -7,5 +7,10 @@
 		"SplashScreen": {
 			"androidScaleType": "CENTER_CROP"
 		}
+	},
+	"server": {
+		"allowNavigation": [
+			"my.api.url"
+		]
 	}
 }

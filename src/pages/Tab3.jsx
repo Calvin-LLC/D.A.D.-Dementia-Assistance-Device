@@ -11,6 +11,8 @@ import {
   IonHeader,
   IonLabel,
   IonCheckbox,
+  IonSelect,
+  IonSelectOption,
 } from "@ionic/react";
 import "./Tab3.css";
 import { useEffect, useRef, useState } from "react";
@@ -46,8 +48,11 @@ const Tab3 = () => {
   const [cols, setCols] = useState([]);
   const [toast_data, set_toast_data] = useState();
   const [toast_data2, set_toast_data2] = useState();
+  const [contact_info, set_contact_info] = useState(0);
   const [family_mode, set_family_mode] = useState(false);
   const [tablet_mode, set_tablet_mode] = useState(false);
+  const [phone_carrier, set_phone_carrier] = useState(0);
+  const [current_location, set_current_location] = useState();
 
   var old_obj = new Array();
   var parsed_data = new Array();
@@ -70,7 +75,7 @@ const Tab3 = () => {
       return;
     }
 
-    send_reminder_contact(reminder_info).then((response) => {
+    send_reminder_contact(reminder_info, phone_carrier, contact_info).then((response) => {
       set_toast_data(true);
       reminder_data.current.value = "";
     });
@@ -96,7 +101,6 @@ const Tab3 = () => {
       });
   };
 
-  const [current_location, set_current_location] = useState();
   const set_location = async () => {
     // get current location from geolocation plugin
     const coords = await Geolocation.getCurrentPosition();
@@ -111,12 +115,12 @@ const Tab3 = () => {
 
   const family_manager = async () => {
     set_family_mode(!family_mode);
-    await db_set("family_mode", !family_mode);
+    db_set("family_mode", !family_mode);
   };
 
   const tablet_manager = async () => {
     set_tablet_mode(!tablet_mode);
-    await db_set("tablet_mode", !tablet_mode);
+    db_set("tablet_mode", !tablet_mode);
   };
 
   useEffect(() => {
@@ -180,6 +184,32 @@ const Tab3 = () => {
               ref={reminder_data}
               placeholder="Reminder Email / Phone"
             />
+            <IonSelect
+              value={contact_info}
+              placeholder="Type of person"
+              onIonChange={(e) => set_contact_info(e.detail.value)}
+            >
+              <IonSelectOption value={"user"}>{"user"}</IonSelectOption>
+              <IonSelectOption value={"caretaker"}>{"family member"}</IonSelectOption>
+            </IonSelect>
+          </IonItem>
+          <IonItem>
+            <IonSelect
+              value={phone_carrier}
+              placeholder="Service Provider"
+              onIonChange={(e) => set_phone_carrier(e.detail.value)}
+            >
+              <IonSelectOption value={"at&t"}>{"At&t"}</IonSelectOption>
+              <IonSelectOption value={"sprint"}>{"Sprint"}</IonSelectOption>
+              <IonSelectOption value={"t-mobile"}>{"T-mobile"}</IonSelectOption>
+              <IonSelectOption value={"verizon"}>{"Verizon"}</IonSelectOption>
+              <IonSelectOption value={"boost mobile"}>{"Boost mobile"}</IonSelectOption>
+              <IonSelectOption value={"cricket"}>{"Cricket"}</IonSelectOption>
+              <IonSelectOption value={"metro pcs"}>{"Metro Pcs"}</IonSelectOption>
+              <IonSelectOption value={"tracfone"}>{"Tracfone"}</IonSelectOption>
+              <IonSelectOption value={"u.s. cellular"}>{"U.S Cellular"}</IonSelectOption>
+              <IonSelectOption value={"virgin mobile"}>{"Virgin Mobile"}</IonSelectOption>
+            </IonSelect>
             <IonButton onClick={add_reminder_person}>Add Contact</IonButton>
           </IonItem>
 

@@ -98,16 +98,16 @@ export const remove_reminder_data = (i) => {
 }
 
 // contact as a string, either email or phone number
-export const send_reminder_contact = (contact) => {
+export const send_reminder_contact = (contact, carrier, type) => {
   return get_reminder_contact().then((response) => {
     var new_obj = template;
     new_obj.type = "send_reminder_contact";
     //new_obj.post = '{"data":[{"contact":"' + contact + '"}],"success":1}';
     if (response.length == 0) {
-      new_obj.post = '{"data":[{"contact":"' + contact + '"}],"success":1}';
+      new_obj.post = {"data": [{"contact" : contact, "carrier" : carrier, "type" : type}], "success":1};
     } else {
       var post_obj = response;
-      post_obj["data"].push({"contact" : contact });
+      post_obj["data"].push({"contact" : contact , "carrier" : carrier, "type": type});
       new_obj.post = JSON.stringify(post_obj);
     }
     
@@ -155,7 +155,6 @@ export const send_geolocation = (location, set_home_location) => {
     var new_obj = template;
     new_obj.type = "send_geolocation";
     //new_obj.post = '{"data":[{"contact":"' + contact + '"}],"success":1}';
-
     if (response.length == 0) {
       var post_obj = {home: location.coords, current: location.coords};
       new_obj.post = JSON.stringify(post_obj);  

@@ -64,7 +64,6 @@ const Tab1 = () => {
 
   const update_weather = async () => {
     const url = await get_location();
-    console.log(url);
     const response = await http_get(url);
 
     var weather_obj = JSON.parse(JSON.stringify(response));
@@ -112,7 +111,6 @@ const Tab1 = () => {
     if (!location_obj) return;
     db_set("location_obj", location_obj.current);
     set_tracker(location_obj.current);
-    console.log(location_obj.current);
   };
 
   var weather_isupdated = false;

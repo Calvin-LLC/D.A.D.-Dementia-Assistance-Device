@@ -13,6 +13,7 @@ import {
   IonCheckbox,
   IonSelect,
   IonSelectOption,
+  IonDatetime,
 } from "@ionic/react";
 import "./Tab3.css";
 import { useEffect, useRef, useState } from "react";
@@ -24,6 +25,7 @@ import {
   send_geolocation,
   to_object,
   send_picture,
+  wander_data_add,
 } from "../componets/data";
 import { db_set, db_get } from "../componets/storage";
 import { Geolocation } from "@ionic-native/geolocation";
@@ -53,10 +55,13 @@ const Tab3 = () => {
   const [tablet_mode, set_tablet_mode] = useState(false);
   const [phone_carrier, set_phone_carrier] = useState(0);
   const [current_location, set_current_location] = useState();
+  const [wander_start_time, set_wander_start_time] = useState();
+  const [wander_end_time, set_wander_end_time] = useState();
 
   var old_obj = new Array();
   var parsed_data = new Array();
 
+  // take a picture......
   const take_picture = async () => {
     const cameraPhoto = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
@@ -67,6 +72,7 @@ const Tab3 = () => {
     send_picture(base64);
   };
 
+  // add reminder contact information
   const add_reminder_person = () => {
     var reminder_info = reminder_data.current.value;
 
@@ -75,12 +81,15 @@ const Tab3 = () => {
       return;
     }
 
-    send_reminder_contact(reminder_info, phone_carrier, contact_info).then((response) => {
-      set_toast_data(true);
-      reminder_data.current.value = "";
-    });
+    send_reminder_contact(reminder_info, phone_carrier, contact_info).then(
+      (response) => {
+        set_toast_data(true);
+        reminder_data.current.value = "";
+      }
+    );
   };
 
+  // store contact data
   const store_data = () => {
     get_reminder_contact()
       .then((res) => {
@@ -101,6 +110,7 @@ const Tab3 = () => {
       });
   };
 
+  // saves location and sends it to server, as home mode
   const set_location = async () => {
     // get current location from geolocation plugin
     const coords = await Geolocation.getCurrentPosition();
@@ -113,16 +123,23 @@ const Tab3 = () => {
     set_current_location(response);
   };
 
+  // checks if we are on family mode
   const family_manager = async () => {
     set_family_mode(!family_mode);
     db_set("family_mode", !family_mode);
   };
 
+  // checks if we are on tablet mode
   const tablet_manager = async () => {
     set_tablet_mode(!tablet_mode);
     db_set("tablet_mode", !tablet_mode);
   };
 
+  const wander_time = async () => {
+    wander_data_add({"wander_start": wander_start_time.substring(11, wander_start_time.length), "wander_end": wander_end_time.substring(11, wander_start_time.length)});
+  }
+
+  // checks to see if we are mounted in the render thread
   useEffect(() => {
     setInterval(() => {
       if (!mounted_prop.current) return;
@@ -130,6 +147,7 @@ const Tab3 = () => {
     }, 2000);
   }, []);
 
+  // caching for all our obj'z
   useEffect(() => {
     db_get("contact_obj").then((response) => {
       if (response) setCols(response);
@@ -190,7 +208,9 @@ const Tab3 = () => {
               onIonChange={(e) => set_contact_info(e.detail.value)}
             >
               <IonSelectOption value={"user"}>{"user"}</IonSelectOption>
-              <IonSelectOption value={"caretaker"}>{"family member"}</IonSelectOption>
+              <IonSelectOption value={"caretaker"}>
+                {"family member"}
+              </IonSelectOption>
             </IonSelect>
           </IonItem>
           <IonItem>
@@ -203,12 +223,20 @@ const Tab3 = () => {
               <IonSelectOption value={"sprint"}>{"Sprint"}</IonSelectOption>
               <IonSelectOption value={"t-mobile"}>{"T-mobile"}</IonSelectOption>
               <IonSelectOption value={"verizon"}>{"Verizon"}</IonSelectOption>
-              <IonSelectOption value={"boost mobile"}>{"Boost mobile"}</IonSelectOption>
+              <IonSelectOption value={"boost mobile"}>
+                {"Boost mobile"}
+              </IonSelectOption>
               <IonSelectOption value={"cricket"}>{"Cricket"}</IonSelectOption>
-              <IonSelectOption value={"metro pcs"}>{"Metro Pcs"}</IonSelectOption>
+              <IonSelectOption value={"metro pcs"}>
+                {"Metro Pcs"}
+              </IonSelectOption>
               <IonSelectOption value={"tracfone"}>{"Tracfone"}</IonSelectOption>
-              <IonSelectOption value={"u.s. cellular"}>{"U.S Cellular"}</IonSelectOption>
-              <IonSelectOption value={"virgin mobile"}>{"Virgin Mobile"}</IonSelectOption>
+              <IonSelectOption value={"u.s. cellular"}>
+                {"U.S Cellular"}
+              </IonSelectOption>
+              <IonSelectOption value={"virgin mobile"}>
+                {"Virgin Mobile"}
+              </IonSelectOption>
             </IonSelect>
             <IonButton onClick={add_reminder_person}>Add Contact</IonButton>
           </IonItem>
@@ -231,6 +259,36 @@ const Tab3 = () => {
                 Set Current Location as home
               </IonButton>
             </IonItem>
+          )}
+          {family_mode && (
+            <div>
+              <IonItem>
+                <IonTitle>Wander Alarm</IonTitle>
+              </IonItem>
+              <IonItem>
+                <IonLabel>Start Time</IonLabel>
+                <IonDatetime
+                  slot="end"
+                  value={wander_start_time}
+                  onIonChange={(e) => set_wander_start_time(e.detail.value)}
+                  label="start time"
+                  presentation="time"
+                ></IonDatetime>
+              </IonItem>
+              <IonItem>
+                <IonLabel>End Time</IonLabel>
+                <IonDatetime
+                  slot="end"
+                  value={wander_end_time}
+                  onIonChange={(e) => set_wander_end_time(e.detail.value)}
+                  label="end time"
+                  presentation="time"
+                ></IonDatetime>
+              </IonItem>
+              <IonItem>
+                <IonButton onClick={() => wander_time()}>Save wander alarm times!</IonButton>
+              </IonItem>
+            </div>
           )}
           <IonItem>
             <IonButton onClick={() => take_picture()}>Take a picture</IonButton>

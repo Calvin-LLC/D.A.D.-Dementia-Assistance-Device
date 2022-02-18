@@ -44,6 +44,7 @@ const Tab2 = () => {
 
   const update_reminder = () => {
     get_reminder_data().then((response) => {
+      //console.log(response);
       var len = response.data.length;
       if (response.data == old_obj) len = 0;
       else if (mounted_prop.current) setCols([]);
@@ -54,7 +55,7 @@ const Tab2 = () => {
       db_set("reminder_obj", parsed_obj);
       old_obj = response.data;
     }).catch((err) => {
-      console.log("Error caught: " + err);
+      console.log("2nd Error caught: " + err);
     });
   };
 
@@ -110,6 +111,7 @@ const Tab2 = () => {
           <IonItemDivider/>
           <IonDatetime
             value={selectedDate}
+            size="cover"
             showClearButton
             onIonChange={(e) => setSelectedDate(e.detail.value)}
           >

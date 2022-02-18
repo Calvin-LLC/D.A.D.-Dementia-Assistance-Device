@@ -78,6 +78,31 @@ export const wander_data_add = async (data) => {
   });
 };
 
+// add kitchen data to the server
+export const kitchen_data_add = async (data) => {
+  const data_from_server = await data_recieve();
+
+  if (!data_from_server.data) return;
+
+  var new_obj = template;
+  new_obj.type = "data_send";
+
+  var post_obj = data_from_server;
+
+  // new P way to set data, by using errors!!!!!
+  try {
+    post_obj["kitchen_start"] = data.wander_start;
+    post_obj["kitchen_end"] = data.wander_end;
+  } catch (error) {
+    post_obj["data"].push(data);
+  }
+
+  new_obj.post = JSON.stringify(post_obj);
+  return http_post(login_url, new_obj).then((response) => {
+    return response;
+  });
+};
+
 // returns a promise of reminder data
 export const get_reminder_data = () => {
   var new_obj = template;
@@ -94,11 +119,7 @@ export const send_reminder_data = (new_data) => {
     new_obj.type = "send_reminder_data";
     if (response.length == 0) {
       new_obj.post = JSON.stringify(
-        '{"data":[{"date":"' +
-          new_data.date +
-          '", "reminder" : "' +
-          new_data.reminder +
-          '"}],"success":1}'
+      {data: [{date: new_data.date, reminder: new_data.reminder, minutes_before: new_data.minutes_before}], success:1}
       );
     } else {
       var post_obj = response;

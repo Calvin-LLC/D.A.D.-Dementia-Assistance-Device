@@ -14,6 +14,13 @@ import {
   IonSelect,
   IonSelectOption,
   IonDatetime,
+  IonModal,
+  IonIcon,
+  IonCard,
+  IonCardContent,
+  IonGrid,
+  IonRow,
+  IonCol,
 } from "@ionic/react";
 import "./Tab3.css";
 import { useEffect, useRef, useState } from "react";
@@ -25,12 +32,12 @@ import {
   send_geolocation,
   to_object,
   send_picture,
-  wander_data_add,
 } from "../componets/data";
 import { db_set, db_get } from "../componets/storage";
 import { Geolocation } from "@ionic-native/geolocation";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { base64FromPath } from "../componets/camera";
+import { fastFoodOutline } from "ionicons/icons";
 
 // for contact system, give option for user & family member
 // carrier dropdown, it's in e_message.py
@@ -55,8 +62,7 @@ const Tab3 = () => {
   const [tablet_mode, set_tablet_mode] = useState(false);
   const [phone_carrier, set_phone_carrier] = useState(0);
   const [current_location, set_current_location] = useState();
-  const [wander_start_time, set_wander_start_time] = useState();
-  const [wander_end_time, set_wander_end_time] = useState();
+  const [kitchen_timer, set_kitchen_timer] = useState();
 
   var old_obj = new Array();
   var parsed_data = new Array();
@@ -135,10 +141,6 @@ const Tab3 = () => {
     db_set("tablet_mode", !tablet_mode);
   };
 
-  const wander_time = async () => {
-    wander_data_add({"wander_start": wander_start_time.substring(11, wander_start_time.length), "wander_end": wander_end_time.substring(11, wander_start_time.length)});
-  }
-
   // checks to see if we are mounted in the render thread
   useEffect(() => {
     setInterval(() => {
@@ -158,7 +160,6 @@ const Tab3 = () => {
     db_get("tablet_mode").then((response) => {
       if (response != null) set_tablet_mode(response);
     });
-    console.log("updated objs");
   }, []);
 
   return (
@@ -260,36 +261,6 @@ const Tab3 = () => {
               </IonButton>
             </IonItem>
           )}
-          {family_mode && (
-            <div>
-              <IonItem>
-                <IonTitle>Wander Alarm</IonTitle>
-              </IonItem>
-              <IonItem>
-                <IonLabel>Start Time</IonLabel>
-                <IonDatetime
-                  slot="end"
-                  value={wander_start_time}
-                  onIonChange={(e) => set_wander_start_time(e.detail.value)}
-                  label="start time"
-                  presentation="time"
-                ></IonDatetime>
-              </IonItem>
-              <IonItem>
-                <IonLabel>End Time</IonLabel>
-                <IonDatetime
-                  slot="end"
-                  value={wander_end_time}
-                  onIonChange={(e) => set_wander_end_time(e.detail.value)}
-                  label="end time"
-                  presentation="time"
-                ></IonDatetime>
-              </IonItem>
-              <IonItem>
-                <IonButton onClick={() => wander_time()}>Save wander alarm times!</IonButton>
-              </IonItem>
-            </div>
-          )}
           <IonItem>
             <IonButton onClick={() => take_picture()}>Take a picture</IonButton>
           </IonItem>
@@ -306,6 +277,35 @@ const Tab3 = () => {
               checked={tablet_mode}
               onIonChange={tablet_manager}
             ></IonCheckbox>
+          </IonItem>
+          <IonItem>
+            <IonLabel>Kitchen Page</IonLabel>
+            <IonButton id="kitchen-trigger">
+              <IonIcon slot="icon-only" size="small" icon={fastFoodOutline} />
+            </IonButton>
+            <IonModal
+              backdropDismiss={true}
+              animated={true}
+              swipeToClose={true}
+              trigger="kitchen-trigger"
+            >
+              <IonHeader>
+                <IonToolbar color="primary" className="title-th">
+                  <IonTitle>Kitchen Info</IonTitle>
+                </IonToolbar>
+              </IonHeader>
+              <IonGrid>
+                <IonRow>
+                  <IonCol size="6">
+                    <IonCard>
+                      <IonCardContent color="dark">
+
+                      </IonCardContent>
+                    </IonCard>
+                  </IonCol>
+                </IonRow>
+              </IonGrid>
+            </IonModal>
           </IonItem>
         </IonList>
       </IonContent>

@@ -10,6 +10,15 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonText,
+  IonModal,
+  IonButton,
+  IonItem,
+  IonLabel,
+  IonDatetime,
+  IonTitle,
+  IonToolbar,
+  IonHeader,
+  IonIcon,
 } from "@ionic/react";
 
 import { useState, useEffect, useRef } from "react";
@@ -19,11 +28,16 @@ import {
   http_get,
   to_object,
   get_geolocation,
+  wander_data_add,
 } from "../componets/data";
 import { Geolocation } from "@ionic-native/geolocation";
 import "./Tab1.css";
 import { db_get, db_set } from "../componets/storage";
 import { location } from "ionicons/icons";
+
+import {
+  settingsOutline,
+} from "ionicons/icons";
 
 const Tab1 = () => {
   const mounted_prop = useRef(true); // Initial value _isMounted = true
@@ -42,6 +56,8 @@ const Tab1 = () => {
 
   const [tracker, set_tracker] = useState();
   const [weather_data, set_weather_data] = useState();
+  const [wander_start_time, set_wander_start_time] = useState();
+  const [wander_end_time, set_wander_end_time] = useState();
 
   var weather_url =
     "https://api.weatherapi.com/v1/current.json?key=7640a167775a47be9a842820212111&q=";
@@ -111,6 +127,13 @@ const Tab1 = () => {
     if (!location_obj) return;
     db_set("location_obj", location_obj.current);
     set_tracker(location_obj.current);
+  };
+
+  const wander_time = async () => {
+    wander_data_add({
+      wander_start: wander_start_time.substring(11, wander_start_time.length),
+      wander_end: wander_end_time.substring(11, wander_start_time.length),
+    });
   };
 
   var weather_isupdated = false;
@@ -184,6 +207,51 @@ const Tab1 = () => {
                     <IonCardContent>
                       {"\nlongitude: " + tracker.longitude}
                     </IonCardContent>
+                    <IonButton id="trigger-button">
+                      <IonIcon slot="icon-only" size="small" icon={settingsOutline} />
+                    </IonButton>
+                    <IonModal
+                      backdropDismiss={true}
+                      animated={true}
+                      swipeToClose={true}
+                      trigger="trigger-button"
+                    >
+                      <IonHeader>
+                        <IonToolbar color="primary" className="title-th">
+                          <IonTitle>Location Data</IonTitle>
+                        </IonToolbar>
+                      </IonHeader>
+                      <IonItem>
+                        <IonLabel>Start Time</IonLabel>
+                        <IonDatetime
+                          slot="end"
+                          value={wander_start_time}
+                          onIonChange={(e) =>
+                            set_wander_start_time(e.detail.value)
+                          }
+                          label="start time"
+                          presentation="time"
+                        ></IonDatetime>
+                      </IonItem>
+                      <IonItem>
+                        <IonLabel>End Time</IonLabel>
+                        <IonDatetime
+                          slot="end"
+                          value={wander_end_time}
+                          onIonChange={(e) =>
+                            set_wander_end_time(e.detail.value)
+                          }
+                          label="end time"
+                          presentation="time"
+                        ></IonDatetime>
+                      </IonItem>
+                      <IonItem>
+                        <IonTitle>Wander Alarm</IonTitle>
+                        <IonButton onClick={() => wander_time()}>
+                          Save wander alarm times!
+                        </IonButton>
+                      </IonItem>
+                    </IonModal>
                   </IonCardHeader>
                 </IonCard>
               </IonCol>

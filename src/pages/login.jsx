@@ -76,7 +76,7 @@ const Login = (props) => {
 
     // convert it to an obj and send to server
     await send_geolocation(to_object(response), false);
-    console.log(response);
+    //console.log(response);
   }
 
   useEffect(() => {
@@ -109,7 +109,6 @@ const Login = (props) => {
             save_login(obj);
             user.setIsLoggedIn(true);
           } else {
-            console.log(response);
             login_status("Incorrect Username or password, please try again", [
               { text: "Ok" },
             ]);

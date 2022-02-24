@@ -32,6 +32,8 @@ import {
   send_geolocation,
   to_object,
   send_picture,
+  data_recieve,
+  kitchen_data_add,
 } from "../componets/data";
 import { db_set, db_get } from "../componets/storage";
 import { Geolocation } from "@ionic-native/geolocation";
@@ -63,6 +65,8 @@ const Tab3 = () => {
   const [phone_carrier, set_phone_carrier] = useState(0);
   const [current_location, set_current_location] = useState();
   const [kitchen_timer, set_kitchen_timer] = useState();
+  const [kitchen_input, set_kitchen_input] = useState({hours:0, minutes:0, seconds:0});
+  const [kitchen_select, set_kitchen_select] = useState(0);
 
   var old_obj = new Array();
   var parsed_data = new Array();
@@ -93,6 +97,33 @@ const Tab3 = () => {
         reminder_data.current.value = "";
       }
     );
+  };
+
+  // update kitchen object
+  const update_kitchen = async () => {
+    const kitchen_value = await data_recieve();
+    if (!kitchen_value) return;
+
+
+    const parsed_kitchen = kitchen_value.time_string;
+    if (!parsed_kitchen) return;
+
+    console.log("parsed kitchen");
+    set_kitchen_timer(parsed_kitchen);
+  };
+
+  // add to kitchen object
+  const add_kitchen = async (type) => {
+    var old_obj = kitchen_input;
+    old_obj[type] = kitchen_select;
+    set_kitchen_input(old_obj);
+  };
+
+  // send kitchen obj
+  const send_kitchen = async () => {
+    kitchen_data_add(kitchen_input);
+    console.log(kitchen_input);
+    set_kitchen_input({hours:0, minutes:0, seconds:0});
   };
 
   // store contact data
@@ -146,7 +177,8 @@ const Tab3 = () => {
     setInterval(() => {
       if (!mounted_prop.current) return;
       store_data();
-    }, 2000);
+      update_kitchen();
+    }, 1000);
   }, []);
 
   // caching for all our obj'z
@@ -160,6 +192,7 @@ const Tab3 = () => {
     db_get("tablet_mode").then((response) => {
       if (response != null) set_tablet_mode(response);
     });
+    update_kitchen(); // update kitchen once
   }, []);
 
   return (
@@ -296,10 +329,72 @@ const Tab3 = () => {
               </IonHeader>
               <IonGrid>
                 <IonRow>
-                  <IonCol size="6">
+                  <IonCol>
+                    {kitchen_timer && (
+                      <IonCard>
+                        <IonCardContent color="dark">
+                          {kitchen_timer}
+                        </IonCardContent>
+                      </IonCard>
+                    )}
+                  </IonCol>
+                  <IonCol>
                     <IonCard>
-                      <IonCardContent color="dark">
-
+                      <IonCardContent>
+                        {kitchen_input && ("H: " +
+                          kitchen_input.hours +
+                          " M: " +
+                          kitchen_input.minutes +
+                          " S: " +
+                          kitchen_input.seconds)}
+                        <IonSelect
+                          value={kitchen_select}
+                          placeholder="Select One"
+                          onIonChange={(e) => set_kitchen_select(e.detail.value)}
+                        >
+                          <IonSelectOption value={0}>0</IonSelectOption>
+                          <IonSelectOption value={1}>1</IonSelectOption>
+                          <IonSelectOption value={5}>5</IonSelectOption>
+                          <IonSelectOption value={10}>10</IonSelectOption>
+                          <IonSelectOption value={15}>15</IonSelectOption>
+                          <IonSelectOption value={20}>20</IonSelectOption>
+                          <IonSelectOption value={25}>25</IonSelectOption>
+                          <IonSelectOption value={30}>30</IonSelectOption>
+                          <IonSelectOption value={35}>35</IonSelectOption>
+                          <IonSelectOption value={40}>40</IonSelectOption>
+                          <IonSelectOption value={45}>45</IonSelectOption>
+                          <IonSelectOption value={50}>50</IonSelectOption>
+                          <IonSelectOption value={55}>55</IonSelectOption>
+                          <IonSelectOption value={60}>60</IonSelectOption>
+                        </IonSelect>
+                        <IonButton
+                          onClick={() => {
+                            add_kitchen("hours");
+                          }}
+                        >
+                          Add as hours
+                        </IonButton>
+                        <IonButton
+                          onClick={() => {
+                            add_kitchen("minutes");
+                          }}
+                        >
+                          Add as minutes
+                        </IonButton>
+                        <IonButton
+                          onClick={() => {
+                            add_kitchen("seconds");
+                          }}
+                        >
+                          Add as seconds
+                        </IonButton>
+                        <IonButton
+                          onClick={() => {
+                            send_kitchen();
+                          }}
+                        >
+                          Send the time!
+                        </IonButton>
                       </IonCardContent>
                     </IonCard>
                   </IonCol>

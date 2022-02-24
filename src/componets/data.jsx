@@ -73,6 +73,7 @@ export const wander_data_add = async (data) => {
   }
 
   new_obj.post = JSON.stringify(post_obj);
+  console.log(new_obj.post);
   return http_post(login_url, new_obj).then((response) => {
     return response;
   });
@@ -91,10 +92,9 @@ export const kitchen_data_add = async (data) => {
 
   // new P way to set data, by using errors!!!!!
   try {
-    post_obj["kitchen_start"] = data.wander_start;
-    post_obj["kitchen_end"] = data.wander_end;
+    post_obj["time"] = data;
   } catch (error) {
-    post_obj["data"].push(data);
+    post_obj["data"].push({time:JSON.stringify(data)});
   }
 
   new_obj.post = JSON.stringify(post_obj);

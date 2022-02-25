@@ -17,9 +17,7 @@
     margin-left: 1rem;
     margin-top: -2.2rem;
 }
-.weathergriditem2 {
 
-}
 .weathergrid{
     display: grid;
     grid-template-columns: 1fr 1fr;

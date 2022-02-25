@@ -168,7 +168,7 @@ const Tab1 = () => {
           {weather_data && (
             <IonRow>
               <IonCol>
-                <IonCard>
+                <IonCard className="modd">
                   <IonCardHeader>
                     <IonCardHeader>
                       <IonCardTitle color="dark">
@@ -178,7 +178,7 @@ const Tab1 = () => {
                       </IonCardTitle>
                     </IonCardHeader>
                   </IonCardHeader>
-                  <IonCardContent>
+                  <IonCardContent className="weathergrid">
                     <IonText color="dark">
                       {"Condition: " + weather_data.current.condition.text}
                       <br />
@@ -186,8 +186,8 @@ const Tab1 = () => {
                       <br />
                       {"Feels Like: " + weather_data.current.feelslike_f + "℉"}
                     </IonText>
-                    <IonImg
-                      className="weather-img"
+                    <IonImg 
+                      className="weather-img weathergriditem"
                       src={weather_data.current.condition.icon}
                       alt=""
                     />

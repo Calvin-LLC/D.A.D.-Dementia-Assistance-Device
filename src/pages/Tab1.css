@@ -3,8 +3,29 @@
 }
 
 .weather-img {
-    max-width: 40%;
-    max-height: 40%;
+    max-width: 9rem;
+    max-height: 9rem;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: -400px;
+}
+.weathergriditem {
+    position: relative;
+    margin-left: 1rem;
+    margin-top: -2.2rem;
+}
+.weathergriditem2 {
+
+}
+.weathergrid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    
+    
 }
 
 .weather {

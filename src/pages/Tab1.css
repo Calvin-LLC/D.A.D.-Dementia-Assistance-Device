@@ -11,3 +11,26 @@
     display: flex;
     justify-content: space-between;
 }
+.modd {
+    height: 160px;
+}
+.bigone {
+    font-size: 2.3rem;
+}
+.connectedandok {
+    background-color: rgb(0, 100, 13);
+    color: white;
+}
+.disconnectedandbad {
+    background-color: rgb(192, 10, 10);
+    color: white;
+}
+.modgrid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+}
+ion-col {
+    padding: 0px;
+}

@@ -164,7 +164,7 @@ const Tab1 = () => {
   return (
     <IonPage>
       <IonContent fullscreen>
-        <IonGrid>
+        <IonGrid className="centerandresize">
           {weather_data && (
             <IonRow>
               <IonCol>
@@ -199,7 +199,7 @@ const Tab1 = () => {
           {tracker && (
             <IonRow>
               <IonCol>
-                <IonCard>
+                <IonCard className="modd">
                   <IonCardHeader>
                     <IonCardContent>
                       {"latitude: " + tracker.latitude}
@@ -260,10 +260,14 @@ const Tab1 = () => {
           <IonRow>
             {cols.map((col, i) => (
               <IonCol size="6" key={i + 1}>
-                <IonCard key={i + 1}>
-                  <IonCardContent color="dark" key={i + 1}>
+                <IonCard className="modd" key={i + 1}>
+                  <IonCardContent className="connectedandok modgrid" color="dark" key={i + 1}>
                     {col}
                   </IonCardContent>
+                  <IonCardContent className="bigone modgrid" color="dark" key={i + 1}>
+                    {col}
+                  </IonCardContent>
+
                 </IonCard>
               </IonCol>
             ))}

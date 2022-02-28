@@ -1,9 +1,7 @@
 // importing all of our react libs
-import React, { useRef, useState, useEffect, useContext } from "react"; // standard react to edit elements etc
-import axios from "axios"; // ezpz web comm
+import { useRef, useState, useEffect, useContext } from "react"; // standard react to edit elements etc
 
 import {
-  IonApp,
   IonHeader,
   IonContent,
   IonToolbar,
@@ -16,10 +14,6 @@ import {
   IonInput,
   IonButton,
   IonIcon,
-  IonCard,
-  IonCardContent,
-  IonAlert,
-  IonText,
   IonPage,
   useIonAlert,
   IonLoading,
@@ -31,16 +25,11 @@ import {
   eyeOffOutline,
   banOutline,
 } from "ionicons/icons";
-import { Storage } from "@ionic/storage";
-import { useHistory } from "react-router-dom";
 import {
-  data_send,
-  data_recieve,
   http_post,
   save_login,
   send_geolocation,
   to_object,
-  is_logged_in,
 } from "../componets/data";
 import { db_init, db_set, db_get } from "../componets/storage";
 import { UserContext } from "../App";

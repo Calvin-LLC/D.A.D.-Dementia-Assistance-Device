@@ -13,7 +13,6 @@ import {
   IonCheckbox,
   IonSelect,
   IonSelectOption,
-  IonDatetime,
   IonModal,
   IonIcon,
   IonCard,
@@ -21,6 +20,7 @@ import {
   IonGrid,
   IonRow,
   IonCol,
+  IonAlert,
 } from "@ionic/react";
 import "./Tab3.css";
 import { useEffect, useRef, useState } from "react";
@@ -65,8 +65,13 @@ const Tab3 = () => {
   const [phone_carrier, set_phone_carrier] = useState(0);
   const [current_location, set_current_location] = useState();
   const [kitchen_timer, set_kitchen_timer] = useState();
-  const [kitchen_input, set_kitchen_input] = useState({hours:0, minutes:0, seconds:0});
+  const [kitchen_input, set_kitchen_input] = useState({
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
   const [kitchen_select, set_kitchen_select] = useState(0);
+  const [recognition, set_recognition] = useState(false);
 
   var old_obj = new Array();
   var parsed_data = new Array();
@@ -80,6 +85,7 @@ const Tab3 = () => {
     });
     let base64 = await base64FromPath(cameraPhoto.webPath);
     send_picture(base64);
+    set_recognition(true);
   };
 
   // add reminder contact information
@@ -104,7 +110,6 @@ const Tab3 = () => {
     const kitchen_value = await data_recieve();
     if (!kitchen_value) return;
 
-
     const parsed_kitchen = kitchen_value.time_string;
     if (!parsed_kitchen) return;
 
@@ -123,7 +128,7 @@ const Tab3 = () => {
   const send_kitchen = async () => {
     kitchen_data_add(kitchen_input);
     console.log(kitchen_input);
-    set_kitchen_input({hours:0, minutes:0, seconds:0});
+    set_kitchen_input({ hours: 0, minutes: 0, seconds: 0 });
   };
 
   // store contact data
@@ -211,6 +216,32 @@ const Tab3 = () => {
           duration={1500}
         />
 
+        <IonAlert
+          isOpen={recognition}
+          onDidDismiss={() => set_recognition(false)}
+          cssClass="my-custom-class"
+          header={"Douglas Thibodeaux"}
+          message={"Your grandson,<br>97% confidence"}
+          buttons={[
+            {
+              text: "",
+              role: "cancel",
+              cssClass: "secondary",
+              id: "cancel-button",
+              handler: (blah) => {
+                console.log("Confirm Cancel: blah");
+              },
+            },
+            {
+              text: "Continue",
+              id: "confirm-button",
+              handler: () => {
+                console.log("Confirm Okay");
+              },
+            },
+          ]}
+        />
+
         <IonHeader>
           <IonToolbar color="primary" className="title-th">
             <IonTitle>Contacts</IonTitle>
@@ -295,8 +326,11 @@ const Tab3 = () => {
             </IonItem>
           )}
           <IonItem>
-            <IonButton onClick={() => take_picture()}>Take a picture</IonButton>
+            <IonButton id="picture_button" onClick={() => take_picture()}>
+              Take a picture
+            </IonButton>
           </IonItem>
+
           <IonItem>
             <IonLabel>Family Mode</IonLabel>
             <IonCheckbox
@@ -341,16 +375,19 @@ const Tab3 = () => {
                   <IonCol>
                     <IonCard>
                       <IonCardContent>
-                        {kitchen_input && ("H: " +
-                          kitchen_input.hours +
-                          " M: " +
-                          kitchen_input.minutes +
-                          " S: " +
-                          kitchen_input.seconds)}
+                        {kitchen_input &&
+                          "H: " +
+                            kitchen_input.hours +
+                            " M: " +
+                            kitchen_input.minutes +
+                            " S: " +
+                            kitchen_input.seconds}
                         <IonSelect
                           value={kitchen_select}
                           placeholder="Select One"
-                          onIonChange={(e) => set_kitchen_select(e.detail.value)}
+                          onIonChange={(e) =>
+                            set_kitchen_select(e.detail.value)
+                          }
                         >
                           <IonSelectOption value={0}>0</IonSelectOption>
                           <IonSelectOption value={1}>1</IonSelectOption>

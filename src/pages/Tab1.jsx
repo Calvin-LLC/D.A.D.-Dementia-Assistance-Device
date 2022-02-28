@@ -33,11 +33,8 @@ import {
 import { Geolocation } from "@ionic-native/geolocation";
 import "./Tab1.css";
 import { db_get, db_set } from "../componets/storage";
-import { location } from "ionicons/icons";
 
-import {
-  settingsOutline,
-} from "ionicons/icons";
+import { settingsOutline } from "ionicons/icons";
 
 const Tab1 = () => {
   const mounted_prop = useRef(true); // Initial value _isMounted = true
@@ -94,26 +91,33 @@ const Tab1 = () => {
         if (response.data == old_obj) len = 0;
         else if (mounted_prop.current) setCols([]);
         for (var i = 0; i < len; ++i) {
+          parsed_data.push({ header: "", body: "" });
           switch (response.data[i].type) {
             case "door":
-              parsed_data[i] =
-                "The door is " + (response.data[i].value ? "Opened" : "Closed");
+              parsed_data[i].header = response.data[i].type;
+              parsed_data[i].body = response.data[i].value
+                ? "Opened"
+                : "Closed";
               break;
             case "temp":
-              parsed_data[i] =
-                "Kitchen Temperature: " + response.data[i].value + "℉";
+              parsed_data[i].header = response.data[i].type;
+              parsed_data[i].body = response.data[i].value + "℉";
               break;
             case "oven":
-              parsed_data[i] = "Oven Power: " + response.data[i].value;
+              parsed_data[i].header = response.data[i].type;
+              parsed_data[i].body = Math.round(response.data[i].value) + "℉";
               break;
             default:
-              parsed_data[i] =
-                response.data[i].type + ": " + response.data[i].value;
+              parsed_data[i].header = response.data[i].type;
+              parsed_data[i].body = response.data[i].value;
               break;
           }
           if (mounted_prop.current)
             setCols((cols) => [...cols, parsed_data[i]]);
+            
+          if (parsed_data[i].header == "" && parsed_data[i].body) parsed_data.pop();
         }
+        
         db_set("dashboard_obj", parsed_data);
         old_obj = response.data;
       })
@@ -186,10 +190,9 @@ const Tab1 = () => {
                       <br />
                       {"Feels Like: " + weather_data.current.feelslike_f + "℉"}
                     </IonText>
-                    <IonImg 
+                    <IonImg
                       className="weather-img weathergriditem"
-                      src={weather_data.current.condition.icon}
-                      alt=""
+                      src={"https://" + weather_data.current.condition.icon}
                     />
                   </IonCardContent>
                 </IonCard>
@@ -199,17 +202,24 @@ const Tab1 = () => {
           {tracker && (
             <IonRow>
               <IonCol>
-                <IonCard className="modd">
+                <IonCard>
                   <IonCardHeader>
-                    <IonCardContent>
-                      {"latitude: " + tracker.latitude}
+                    <IonCardContent className="grid">
+                      <h3>
+                        <b>
+                          {"lat: " + tracker.latitude} <br />
+                          {"long: " + tracker.longitude}
+                        </b>
+                      </h3>
+                      <IonButton id="trigger-button" className="griditem">
+                        <IonIcon
+                          slot="icon-only"
+                          size="small"
+                          icon={settingsOutline}
+                        />
+                      </IonButton>
                     </IonCardContent>
-                    <IonCardContent>
-                      {"\nlongitude: " + tracker.longitude}
-                    </IonCardContent>
-                    <IonButton id="trigger-button">
-                      <IonIcon slot="icon-only" size="small" icon={settingsOutline} />
-                    </IonButton>
+                    <IonImg src="https://ziadabdelati.com/google_maps.png"></IonImg>
                     <IonModal
                       backdropDismiss={true}
                       animated={true}
@@ -259,16 +269,23 @@ const Tab1 = () => {
           )}
           <IonRow>
             {cols.map((col, i) => (
-              <IonCol size="6" key={i + 1}>
-                <IonCard className="modd" key={i + 1}>
-                  <IonCardContent className="connectedandok modgrid" color="dark" key={i + 1}>
-                    {col}
+              <IonCol size="6" key={"col" + i + 1}>
+                {col.header && (<IonCard className="modd" key={"card" + i + 1}>
+                  <IonCardHeader
+                    className="connected modgrid"
+                    color="dark"
+                    key={col.header + "header" + i + 1}
+                  >
+                    {col.header}
+                  </IonCardHeader>
+                  <IonCardContent
+                    className="bigone modgrid"
+                    color="dark"
+                    key={col.body + "body" + i + 1}
+                  >
+                    {col.body}
                   </IonCardContent>
-                  <IonCardContent className="bigone modgrid" color="dark" key={i + 1}>
-                    {col}
-                  </IonCardContent>
-
-                </IonCard>
+                </IonCard>)}
               </IonCol>
             ))}
           </IonRow>

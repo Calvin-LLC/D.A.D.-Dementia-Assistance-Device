@@ -18,12 +18,22 @@
     margin-top: -2.2rem;
 }
 
+.griditem {
+    position: relative;
+    margin-left: 1rem;
+    margin-top: -.5rem;
+}
+
+.grid{
+    display: grid;
+    grid-template-columns: 1fr 0fr;
+    grid-template-rows: 1fr;
+}
+
 .weathergrid{
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr;
-    
-    
 }
 
 .weather {
@@ -34,13 +44,16 @@
     height: 160px;
 }
 .bigone {
-    font-size: 2.3rem;
+    font-size: 2.8rem;
+    width: 100%;
+    margin-top: 20px;
+    
 }
-.connectedandok {
+.connected {
     background-color: rgb(0, 100, 13);
     color: white;
 }
-.disconnectedandbad {
+.disconnected {
     background-color: rgb(192, 10, 10);
     color: white;
 }

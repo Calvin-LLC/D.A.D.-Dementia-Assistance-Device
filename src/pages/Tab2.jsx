@@ -12,7 +12,6 @@ import {
   IonLabel,
   IonListHeader,
   IonItemDivider,
-  useIonPicker,
   IonSelect,
   IonSelectOption,  
 } from "@ionic/react";
@@ -33,9 +32,7 @@ const Tab2 = () => {
 
   const reminder_data = useRef(null);
   const [selectedDate, setSelectedDate] = useState();
-  const selectedTime = useRef(null);
   const [cols, setCols] = useState([]);
-  const [present] = useIonPicker();
   const [value, setValue] = useState(0);
 
 

@@ -129,7 +129,6 @@ export const send_reminder_data = (new_data) => {
         minutes_before: new_data.minutes_before,
       });
       new_obj.post = JSON.stringify(post_obj);
-      console.log(new_obj);
     }
 
     return http_post(login_url, new_obj).then((res) => {

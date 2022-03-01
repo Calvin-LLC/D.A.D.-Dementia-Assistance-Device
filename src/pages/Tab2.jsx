@@ -13,13 +13,21 @@ import {
   IonListHeader,
   IonItemDivider,
   IonSelect,
-  IonSelectOption,  
+  IonSelectOption,
+  IonModal,
+  IonPopover,
+  IonText,
 } from "@ionic/react";
 import { useState, useEffect, useRef } from "react";
 import "./Tab2.css";
-import { get_reminder_data, send_reminder_data, remove_reminder_data } from "../componets/data";
+import {
+  get_reminder_data,
+  send_reminder_data,
+  remove_reminder_data,
+} from "../componets/data";
 import { format, parseISO } from "date-fns";
 import { db_set, db_get } from "../componets/storage";
+import { closeOutline } from "ionicons/icons";
 
 const Tab2 = () => {
   const mounted_prop = useRef(true);
@@ -32,41 +40,70 @@ const Tab2 = () => {
 
   const reminder_data = useRef(null);
   const [selectedDate, setSelectedDate] = useState();
+  const [raw_date, set_raw_date] = useState(0);
+  const [raw_time, set_raw_time] = useState(0);
+  const [reminder_modal, set_reminder_modal] = useState(false);
+  const [time, set_time] = useState();
   const [cols, setCols] = useState([]);
   const [value, setValue] = useState(0);
-
 
   var old_obj = new Array();
   var parsed_obj = new Array();
 
   const update_reminder = () => {
-    get_reminder_data().then((response) => {
-      //console.log(response);
-      var len = response.data.length;
-      if (response.data == old_obj) len = 0;
-      else if (mounted_prop.current) setCols([]);
-      for (var i = 0; i < len; ++i) {
-        parsed_obj[i] = {date : format(parseISO(response.data[i].date), 'PPPPpppp'), reminder : response.data[i].reminder};
-        setCols((cols) => [...cols, parsed_obj[i]]);
-      }
-      db_set("reminder_obj", parsed_obj);
-      old_obj = response.data;
-    }).catch((err) => {
-      console.log("2nd Error caught: " + err);
-    });
+    get_reminder_data()
+      .then((response) => {
+        //console.log(response);
+        var len = response.data.length;
+        if (response.data == old_obj) len = 0;
+        else if (mounted_prop.current) setCols([]);
+        old_obj = response.data;
+        for (var i = 0; i < len; ++i) {
+          var dt = format(parseISO(response.data[i].date), "PPPPpppp"); 
+          parsed_obj[i] = {
+            date: dt.substring(0, dt.length - 10),
+            reminder: response.data[i].reminder,
+          };
+          setCols((cols) => [...cols, parsed_obj[i]]);
+        }
+        db_set("reminder_obj", parsed_obj);
+      })
+      .catch((err) => {
+        console.log("2nd Error caught: " + err);
+      });
   };
 
   const add_reminder = () => {
     const reminder_msg = reminder_data.current.value;
 
-    if (!reminder_msg || !selectedDate) return;
+    if (!reminder_msg || !selectedDate || !time) return;
 
-    send_reminder_data({ date: selectedDate, reminder: reminder_msg, minutes_before : value }).then(
-      () => {
-        update_reminder();
-        reminder_data.current.value = "";
-      }
-    );
+    send_reminder_data({
+      date: raw_date + raw_time,
+      reminder: reminder_msg,
+      minutes_before: value,
+    }).then(() => {
+      update_reminder();
+      reminder_data.current.value = "";
+    });
+    set_reminder_modal(false);
+  };
+
+  const date_picker = (e) => {
+    var date = e.detail.value;
+    set_raw_date(date.substring(0, 10));
+    date = date.substring(0, 10);
+    setSelectedDate(date);
+  };
+
+  const time_picker = (e) => {
+    var tme = e.detail.value;
+    set_raw_time(tme.substring(10, tme.length));
+    tme = tme.substring(11, tme.length - 6);
+    if (tme.substring(0, 2) - 12 > 0)
+      tme = tme.substring(0, 2) - 12 + tme.substring(2, tme.length) + " PM";
+    else tme = tme.concat(" AM");
+    set_time(tme);
   };
 
   useEffect(() => {
@@ -94,53 +131,90 @@ const Tab2 = () => {
           {cols.map((col, i) => (
             <div key={i + 1}>
               <IonListHeader lines="none">
-                <IonLabel>{col.date}</IonLabel>
+                <IonLabel><b>{col.date}</b></IonLabel>
               </IonListHeader>
               <IonItem lines="full">
                 <IonLabel>{"- " + col.reminder}</IonLabel>
-                <IonButton slot="end" onClick={() => {
-                remove_reminder_data(i);
-              }}>X</IonButton>
+                <IonButton
+                  slot="end"
+                  size="small"
+                  icon={closeOutline}
+                  onClick={() => {
+                    remove_reminder_data(i);
+                  }}
+                >X
+                </IonButton>
               </IonItem>
             </div>
           ))}
-
-          <IonItemDivider/>
-          <IonDatetime
-            value={selectedDate}
-            size="cover"
-            showClearButton
-            onIonChange={(e) => setSelectedDate(e.detail.value)}
-          >
-            <div slot="title">Reminder Date and Time</div>
-          </IonDatetime>
-          <IonItem>
-            <IonLabel>Minutes Before</IonLabel>
-            <IonSelect value={value} placeholder="Select One" onIonChange={e => setValue(e.detail.value)}>
-              <IonSelectOption value={0}>0</IonSelectOption>
-              <IonSelectOption value={1}>1</IonSelectOption>
-              <IonSelectOption value={5}>5</IonSelectOption>
-              <IonSelectOption value={10}>10</IonSelectOption>
-              <IonSelectOption value={15}>15</IonSelectOption>
-              <IonSelectOption value={20}>20</IonSelectOption>
-              <IonSelectOption value={25}>25</IonSelectOption>
-              <IonSelectOption value={30}>30</IonSelectOption>
-              <IonSelectOption value={35}>35</IonSelectOption>
-              <IonSelectOption value={40}>40</IonSelectOption>
-              <IonSelectOption value={45}>45</IonSelectOption>
-              <IonSelectOption value={50}>50</IonSelectOption>
-              <IonSelectOption value={55}>55</IonSelectOption>
-              <IonSelectOption value={60}>60</IonSelectOption>
-            </IonSelect>
-          </IonItem>
-
           <IonItem>
             <IonInput ref={reminder_data} placeholder="Reminder message" />
-            <IonButton onClick={add_reminder}>Add Reminder</IonButton>
+            <IonButton
+              id="reminder_modal"
+              onClick={() => set_reminder_modal(true)}
+            >
+              set
+            </IonButton>
           </IonItem>
+          <IonModal
+            trigger="reminder_modal"
+            isOpen={reminder_modal}
+            swipeToClose={true}
+            breakpoints={[0.1, 0.5, 1]}
+            initialBreakpoint={0.5}
+          >
+            <IonContent>
+              <IonItemDivider />
+              <IonItem button={true} id="open-date-input">
+                <IonLabel>Date</IonLabel>
+                <IonText slot="end">{selectedDate}</IonText>
+                <IonPopover trigger="open-date-input" showBackdrop={false}>
+                  <IonDatetime
+                    presentation="date"
+                    onIonChange={(e) => date_picker(e)}
+                  />
+                </IonPopover>
+              </IonItem>
+              <IonItem button={true} id="open_time">
+                <IonLabel>Time</IonLabel>
+                <IonText slot="end">{time}</IonText>
+                <IonPopover trigger="open_time" showBackdrop={false}>
+                  <IonDatetime
+                    presentation="time"
+                    onIonChange={(e) => time_picker(e)}
+                  />
+                </IonPopover>
+              </IonItem>
+              <IonItem>
+                <IonLabel>Minutes Before</IonLabel>
+                <IonSelect
+                  value={value}
+                  placeholder="Select One"
+                  onIonChange={(e) => setValue(e.detail.value)}
+                >
+                  <IonSelectOption value={0}>0</IonSelectOption>
+                  <IonSelectOption value={1}>1</IonSelectOption>
+                  <IonSelectOption value={5}>5</IonSelectOption>
+                  <IonSelectOption value={10}>10</IonSelectOption>
+                  <IonSelectOption value={15}>15</IonSelectOption>
+                  <IonSelectOption value={20}>20</IonSelectOption>
+                  <IonSelectOption value={25}>25</IonSelectOption>
+                  <IonSelectOption value={30}>30</IonSelectOption>
+                  <IonSelectOption value={35}>35</IonSelectOption>
+                  <IonSelectOption value={40}>40</IonSelectOption>
+                  <IonSelectOption value={45}>45</IonSelectOption>
+                  <IonSelectOption value={50}>50</IonSelectOption>
+                  <IonSelectOption value={55}>55</IonSelectOption>
+                  <IonSelectOption value={60}>60</IonSelectOption>
+                </IonSelect>
+              </IonItem>
+              <center>
+                <IonButton size="small" onClick={add_reminder}>Add Reminder</IonButton>
+              </center>
+            </IonContent>
+          </IonModal>
         </IonList>
       </IonContent>
-      
     </IonPage>
   );
 };

@@ -113,7 +113,6 @@ const Tab3 = () => {
     const parsed_kitchen = kitchen_value.time_string;
     if (!parsed_kitchen) return;
 
-    console.log("parsed kitchen");
     set_kitchen_timer(parsed_kitchen);
   };
 
@@ -220,7 +219,7 @@ const Tab3 = () => {
           isOpen={recognition}
           onDidDismiss={() => set_recognition(false)}
           cssClass="my-custom-class"
-          header={"Douglas Thibodeaux"}
+          header={"Douglas"}
           message={"Your grandson,<br>97% confidence"}
           buttons={[
             {

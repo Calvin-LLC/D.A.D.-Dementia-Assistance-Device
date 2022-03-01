@@ -21,6 +21,8 @@ import {
   IonRow,
   IonCol,
   IonAlert,
+  IonBackButton,
+  IonButtons,
 } from "@ionic/react";
 import "./Tab3.css";
 import { useEffect, useRef, useState } from "react";
@@ -40,9 +42,7 @@ import { Geolocation } from "@ionic-native/geolocation";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { base64FromPath } from "../componets/camera";
 import { fastFoodOutline } from "ionicons/icons";
-
-// for contact system, give option for user & family member
-// carrier dropdown, it's in e_message.py
+import { closeOutline, cameraOutline } from "ionicons/icons";
 
 const Tab3 = () => {
   const mounted_prop = useRef(true);
@@ -243,7 +243,9 @@ const Tab3 = () => {
 
         <IonHeader>
           <IonToolbar color="primary" className="title-th">
-            <IonTitle>Contacts</IonTitle>
+            <center>
+              <IonTitle>Contacts</IonTitle>
+            </center>
           </IonToolbar>
         </IonHeader>
 
@@ -252,12 +254,13 @@ const Tab3 = () => {
             <IonItem lines="inset" key={i + 1}>
               <IonTitle key={i + 1}>{col}</IonTitle>
               <IonButton
-                slot="end"
+                size="small"
+                fill="outline"
                 onClick={() => {
                   remove_reminder_contact(i);
                 }}
               >
-                X
+                <IonIcon icon={closeOutline}></IonIcon>
               </IonButton>
             </IonItem>
           ))}
@@ -324,11 +327,6 @@ const Tab3 = () => {
               </IonButton>
             </IonItem>
           )}
-          <IonItem>
-            <IonButton id="picture_button" onClick={() => take_picture()}>
-              Take a picture
-            </IonButton>
-          </IonItem>
 
           <IonItem>
             <IonLabel>Family Mode</IonLabel>
@@ -345,6 +343,12 @@ const Tab3 = () => {
             ></IonCheckbox>
           </IonItem>
           <IonItem>
+            <IonLabel>Image Recognition</IonLabel>
+            <IonButton id="picture_button" onClick={() => take_picture()}>
+              <IonIcon icon={cameraOutline}></IonIcon>
+            </IonButton>
+          </IonItem>
+          <IonItem>
             <IonLabel>Kitchen Page</IonLabel>
             <IonButton id="kitchen-trigger">
               <IonIcon slot="icon-only" size="small" icon={fastFoodOutline} />
@@ -357,7 +361,9 @@ const Tab3 = () => {
             >
               <IonHeader>
                 <IonToolbar color="primary" className="title-th">
-                  <IonTitle>Kitchen Info</IonTitle>
+                  <center>
+                    <IonTitle>Kitchen Info</IonTitle>
+                  </center>
                 </IonToolbar>
               </IonHeader>
               <IonGrid>

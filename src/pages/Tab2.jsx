@@ -17,6 +17,9 @@ import {
   IonModal,
   IonPopover,
   IonText,
+  IonIcon,
+  IonFabButton,
+  IonFab,
 } from "@ionic/react";
 import { useState, useEffect, useRef } from "react";
 import "./Tab2.css";
@@ -27,7 +30,7 @@ import {
 } from "../componets/data";
 import { format, parseISO } from "date-fns";
 import { db_set, db_get } from "../componets/storage";
-import { closeOutline } from "ionicons/icons";
+import { closeOutline, addOutline } from "ionicons/icons";
 
 const Tab2 = () => {
   const mounted_prop = useRef(true);
@@ -59,7 +62,7 @@ const Tab2 = () => {
         else if (mounted_prop.current) setCols([]);
         old_obj = response.data;
         for (var i = 0; i < len; ++i) {
-          var dt = format(parseISO(response.data[i].date), "PPPPpppp"); 
+          var dt = format(parseISO(response.data[i].date), "PPPPpppp");
           parsed_obj[i] = {
             date: dt.substring(0, dt.length - 10),
             reminder: response.data[i].reminder,
@@ -123,7 +126,9 @@ const Tab2 = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar color="primary" className="title-th">
-          <IonTitle>Reminders</IonTitle>
+          <center>
+            <IonTitle>Reminders</IonTitle>
+          </center>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -131,31 +136,33 @@ const Tab2 = () => {
           {cols.map((col, i) => (
             <div key={i + 1}>
               <IonListHeader lines="none">
-                <IonLabel><b>{col.date}</b></IonLabel>
+                <IonLabel>
+                  <b>{col.date}</b>
+                </IonLabel>
               </IonListHeader>
               <IonItem lines="full">
                 <IonLabel>{"- " + col.reminder}</IonLabel>
                 <IonButton
-                  slot="end"
                   size="small"
-                  icon={closeOutline}
+                  fill="outline"
                   onClick={() => {
                     remove_reminder_data(i);
                   }}
-                >X
+                >
+                  <IonIcon icon={closeOutline}></IonIcon>
                 </IonButton>
               </IonItem>
             </div>
           ))}
-          <IonItem>
-            <IonInput ref={reminder_data} placeholder="Reminder message" />
+          <center>
             <IonButton
               id="reminder_modal"
               onClick={() => set_reminder_modal(true)}
             >
-              set
+              <IonIcon icon={addOutline} />
             </IonButton>
-          </IonItem>
+          </center>
+
           <IonModal
             trigger="reminder_modal"
             isOpen={reminder_modal}
@@ -208,8 +215,13 @@ const Tab2 = () => {
                   <IonSelectOption value={60}>60</IonSelectOption>
                 </IonSelect>
               </IonItem>
+              <IonItem>
+                <IonInput ref={reminder_data} placeholder="Reminder message" />
+              </IonItem>
               <center>
-                <IonButton size="small" onClick={add_reminder}>Add Reminder</IonButton>
+                <IonButton size="small" onClick={add_reminder}>
+                  Add Reminder
+                </IonButton>
               </center>
             </IonContent>
           </IonModal>

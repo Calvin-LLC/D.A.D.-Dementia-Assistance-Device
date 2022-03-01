@@ -17,6 +17,7 @@ import {
   IonPage,
   useIonAlert,
   IonLoading,
+  IonImg,
 } from "@ionic/react";
 
 import {
@@ -25,22 +26,15 @@ import {
   eyeOffOutline,
   banOutline,
 } from "ionicons/icons";
-import {
-  http_post,
-  save_login,
-  send_geolocation,
-  to_object,
-} from "../componets/data";
+import { http_post, save_login } from "../componets/data";
 import { db_init, db_set, db_get } from "../componets/storage";
 import { UserContext } from "../App";
-import { Geolocation } from "@ionic-native/geolocation";
 
 const Login = (props) => {
-  
   const [login_status] = useIonAlert();
 
   // states
-  const [showLoading, setShowLoading] = useState(true);
+  const [showLoading, setShowLoading] = useState(false);
   const [show_pass, set_show_pass] = useState(true);
   const [pass_shown, set_pass_shown] = useState("password");
   const user = useContext(UserContext);
@@ -51,28 +45,6 @@ const Login = (props) => {
 
   // website
   var server_url = "https://ziadabdelati.com/check.php";
-
-  const geolocation_updater = async () => {
-    const tablet_mode = await db_get("tablet_mode");
-    const family_mode = await db_get("family_mode");
-
-    if (tablet_mode || family_mode) return; // if family mode or tablet mode are enabled, it shouldn't track you at all
-
-    // get current location from geolocation plugin
-    const response = await Geolocation.getCurrentPosition();
-
-    db_set("geolocation", to_object(response));
-
-    // convert it to an obj and send to server
-    await send_geolocation(to_object(response), false);
-    //console.log(response);
-  }
-
-  useEffect(() => {
-    setInterval(() => {
-      geolocation_updater();
-    }, 10000);
-  }, []);
 
   const initial_login = () => {
     setShowLoading(true);
@@ -163,7 +135,7 @@ const Login = (props) => {
 
   useEffect(() => {
     db_init();
-    initial_login();
+    //initial_login();
   }, []);
 
   return (
@@ -176,12 +148,18 @@ const Login = (props) => {
       />
       <IonHeader>
         <IonToolbar color="primary" className="title-th">
-          <IonTitle>Smart Home Senior Thesis</IonTitle>
+          <center>
+            <IonTitle>Dimentia Assistance Device</IonTitle>
+          </center>
         </IonToolbar>
       </IonHeader>
 
       <IonContent fullscreen className="ion-padding">
         <IonGrid>
+          <IonRow>
+            <IonImg src="https://ziadabdelati.com/puzzlehead.jpg" />
+          </IonRow>
+          <br />
           <IonRow>
             <IonCol>
               <IonItem>
@@ -207,13 +185,19 @@ const Login = (props) => {
                   ref={password_ref}
                 ></IonInput>
                 {!show_pass && (
-                  <IonIcon onClick={toggle_pass} slot="end" icon={eyeOutline} />
+                  <IonIcon
+                    onClick={toggle_pass}
+                    slot="end"
+                    icon={eyeOutline}
+                    className="eye"
+                  />
                 )}
                 {show_pass && (
                   <IonIcon
                     onClick={toggle_pass}
                     slot="end"
                     icon={eyeOffOutline}
+                    className="eye"
                   />
                 )}
               </IonItem>

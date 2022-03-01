@@ -1,8 +1,15 @@
 title-th {
-    text-align:center;
-    margin: 0 auto;
+  text-align: center;
+  margin: 0 auto;
 }
 
 .error {
-    color: red;
+  color: red;
+}
+
+.eye {
+  font-size: 2rem !important;
+  position: relative !important;
+  top: 22px !important;
+  margin: 0 auto !important;
 }

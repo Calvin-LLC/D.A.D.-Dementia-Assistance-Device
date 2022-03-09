@@ -18,8 +18,6 @@ import {
   IonPopover,
   IonText,
   IonIcon,
-  IonFabButton,
-  IonFab,
 } from "@ionic/react";
 import { useState, useEffect, useRef } from "react";
 import "./Tab2.css";

@@ -1,7 +1,6 @@
 import axios from "axios"; // ezpz web comm
 
 var login_url = "https://ziadabdelati.com/check.php";
-var is_logged_in = { toggle: false };
 var template = {
   email: "",
   pword: "",

@@ -18,6 +18,8 @@ import {
   useIonAlert,
   IonLoading,
   IonImg,
+  IonCheckbox,
+  IonList,
 } from "@ionic/react";
 
 import {
@@ -34,6 +36,7 @@ const Login = (props) => {
   const [login_status] = useIonAlert();
 
   // states
+  const [remember_me, set_remember_me] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
   const [show_pass, set_show_pass] = useState(true);
   const [pass_shown, set_pass_shown] = useState("password");
@@ -133,9 +136,17 @@ const Login = (props) => {
     set_pass_shown(show_pass ? "text" : "password");
   };
 
+  const remember_me_func = (e) => {
+    db_set("remember_me", e.detail.checked);
+    set_remember_me(e.detail.checked);
+  };
+
   useEffect(() => {
     db_init();
-    //initial_login();
+    db_get("remember_me").then((res) => {
+      set_remember_me(res);
+      if (res) initial_login();
+    });
   }, []);
 
   return (
@@ -203,6 +214,16 @@ const Login = (props) => {
               </IonItem>
             </IonCol>
           </IonRow>
+
+          <IonItem>
+              <IonLabel slot="end">Remember Me</IonLabel>
+              <IonCheckbox
+              slot="end"
+                checked={remember_me}
+                onIonChange={(e) => remember_me_func(e)}
+              ></IonCheckbox>
+          </IonItem>
+          <br />
 
           <IonRow>
             <IonCol size="6">

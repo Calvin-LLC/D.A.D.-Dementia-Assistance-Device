@@ -88,8 +88,8 @@ const Tab1 = () => {
     data_recieve()
       .then((response) => {
         var len = response.data.length;
-        if (response.data == old_obj) len = 0;
-        else if (mounted_prop.current) setCols([]);
+        if (response.data == old_obj) return;
+
         for (var i = 0; i < len; ++i) {
           parsed_data.push({ header: "", body: "" });
           switch (response.data[i].type) {
@@ -112,12 +112,13 @@ const Tab1 = () => {
               parsed_data[i].body = response.data[i].value;
               break;
           }
-          if (mounted_prop.current)
-            setCols((cols) => [...cols, parsed_data[i]]);
-            
-          if (parsed_data[i].header == "" && parsed_data[i].body) parsed_data.pop();
+          //if (mounted_prop.current) setCols((cols) => [...cols, parsed_data[i]]);
+
+          if (parsed_data[i].header == "" && parsed_data[i].body)
+            parsed_data.pop();
         }
-        
+        if (old_obj != response.data) setCols(parsed_data);
+
         db_set("dashboard_obj", parsed_data);
         old_obj = response.data;
       })
@@ -134,9 +135,14 @@ const Tab1 = () => {
   };
 
   const wander_time = async () => {
-    wander_data_add({
+    var wander = {
       wander_start: wander_start_time.substring(11, wander_start_time.length),
       wander_end: wander_end_time.substring(11, wander_start_time.length),
+    };
+    wander_data_add(wander);
+    db_set("wander_obj", {
+      wander_start: wander_start_time,
+      wander_end: wander_end_time,
     });
   };
 
@@ -162,6 +168,12 @@ const Tab1 = () => {
     });
     db_get("dashboard_obj").then((res) => {
       if (res) setCols(res);
+    });
+    db_get("wander_obj").then((rr) => {
+      if (rr) {
+        set_wander_start_time(rr.wander_start);
+        set_wander_end_time(rr.wander_end);
+      }
     });
   }, []);
 
@@ -270,22 +282,24 @@ const Tab1 = () => {
           <IonRow>
             {cols.map((col, i) => (
               <IonCol size="6" key={"col" + i + 1}>
-                {col.header && (<IonCard className="modd" key={"card" + i + 1}>
-                  <IonCardHeader
-                    className="connected modgrid"
-                    color="dark"
-                    key={col.header + "header" + i + 1}
-                  >
-                    {col.header}
-                  </IonCardHeader>
-                  <IonCardContent
-                    className="bigone modgrid"
-                    color="dark"
-                    key={col.body + "body" + i + 1}
-                  >
-                    {col.body}
-                  </IonCardContent>
-                </IonCard>)}
+                {col.header && (
+                  <IonCard className="modd" key={"card" + i + 1}>
+                    <IonCardHeader
+                      className="connected modgrid"
+                      color="dark"
+                      key={col.header + "header" + i + 1}
+                    >
+                      {col.header}
+                    </IonCardHeader>
+                    <IonCardContent
+                      className="bigone modgrid"
+                      color="dark"
+                      key={col.body + "body" + i + 1}
+                    >
+                      {col.body}
+                    </IonCardContent>
+                  </IonCard>
+                )}
               </IonCol>
             ))}
           </IonRow>

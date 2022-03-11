@@ -47,6 +47,7 @@ const Tab2 = () => {
   const [time, set_time] = useState();
   const [cols, setCols] = useState([]);
   const [value, setValue] = useState(0);
+  const [reminder_type, set_reminder_type] = useState(0);
 
   var old_obj = new Array();
   var parsed_obj = new Array();
@@ -54,19 +55,16 @@ const Tab2 = () => {
   const update_reminder = () => {
     get_reminder_data()
       .then((response) => {
-        //console.log(response);
         var len = response.data.length;
-        if (response.data == old_obj) len = 0;
-        else if (mounted_prop.current) setCols([]);
-        old_obj = response.data;
+        if (response.data == old_obj) return;
         for (var i = 0; i < len; ++i) {
           var dt = format(parseISO(response.data[i].date), "PPPPpppp");
           parsed_obj[i] = {
             date: dt.substring(0, dt.length - 10),
             reminder: response.data[i].reminder,
           };
-          setCols((cols) => [...cols, parsed_obj[i]]);
         }
+        if (mounted_prop.current) setCols(parsed_obj);
         db_set("reminder_obj", parsed_obj);
       })
       .catch((err) => {
@@ -83,9 +81,9 @@ const Tab2 = () => {
       date: raw_date + raw_time,
       reminder: reminder_msg,
       minutes_before: value,
+      type: reminder_type,
     }).then(() => {
       update_reminder();
-      reminder_data.current.value = "";
     });
     set_reminder_modal(false);
   };
@@ -190,6 +188,7 @@ const Tab2 = () => {
                   />
                 </IonPopover>
               </IonItem>
+
               <IonItem>
                 <IonLabel>Minutes Before</IonLabel>
                 <IonSelect
@@ -213,9 +212,24 @@ const Tab2 = () => {
                   <IonSelectOption value={60}>60</IonSelectOption>
                 </IonSelect>
               </IonItem>
+
+              <IonItem>
+                <IonLabel>Who to remind</IonLabel>
+                <IonSelect
+                  value={reminder_type}
+                  placeholder="Select One"
+                  onIonChange={(e) => set_reminder_type(e.detail.value)}
+                >
+                  <IonSelectOption value={"user"}>user</IonSelectOption>
+                  <IonSelectOption value={"caretaker"}>family</IonSelectOption>
+                  <IonSelectOption value={"both"}>both</IonSelectOption>
+                </IonSelect>
+              </IonItem>
+
               <IonItem>
                 <IonInput ref={reminder_data} placeholder="Reminder message" />
               </IonItem>
+
               <center>
                 <IonButton size="small" onClick={add_reminder}>
                   Add Reminder

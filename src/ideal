@@ -3,19 +3,21 @@ X remember me checkbox
 
 dashboard:
 - fix google map
-- dont setcols when nothing same! 
+X dont setcols when nothing same! 
 - settings icon for each item
 - make text scale with screen size
 
 reminders:
 - presets, row of cards
-- no reminders update when nothing update
-- set a user / both reminder
+X no reminders update when nothing update
+X set a user / both reminder
 - repetitive reminders
 
 settings:
-- manage contacts page (same thing)
-- family page, (family mode option, charts!!!!, allows changing of wander alarm, set home location confirmation, choose what reminder option you want (pass douglas, text: true, phone: true, email: true))
-- set wander alarm time to current wander start and stop times
+X manage contacts page (same thing)
+1/2 X family page, (X family mode option, charts!!!!, allows changing of wander alarm, set home location confirmation, choose what reminder option you want (pass douglas, text: true, phone: true, email: true))
+X set wander alarm time to current wander start and stop times
 - facial recognition workz, shows description 
 X make kitchen page not TRASH (add timer like calculator)
+X bonus value (key called bonus, in seconds)
+- recipe saver and browser on kitchen page

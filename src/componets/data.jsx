@@ -52,6 +52,29 @@ export const data_send = (data) => {
   });
 };
 
+// add bonus time to the kitchen timer
+export const bonus_time_add = async (bonus) => {
+  var data_from_server = await data_recieve();
+
+  if (!data_from_server.data) return;
+
+  var new_obj = template;
+  new_obj.type = "data_send";
+
+  var post_obj = data_from_server;
+
+  try {
+    post_obj["time"]["bonus"] += bonus.bonus;
+  } catch (e) {
+    post_obj["time"].push(bonus);
+  }
+  
+  new_obj.post = JSON.stringify(post_obj);
+  return http_post(login_url, new_obj).then((response) => {
+    return new_obj.post;
+  });
+};
+
 // add data to the server
 export const wander_data_add = async (data) => {
   const data_from_server = await data_recieve();
@@ -72,7 +95,6 @@ export const wander_data_add = async (data) => {
   }
 
   new_obj.post = JSON.stringify(post_obj);
-  console.log(new_obj.post);
   return http_post(login_url, new_obj).then((response) => {
     return response;
   });
@@ -93,7 +115,7 @@ export const kitchen_data_add = async (data) => {
   try {
     post_obj["time"] = data;
   } catch (error) {
-    post_obj["data"].push({time:JSON.stringify(data)});
+    post_obj["data"].push({ time: JSON.stringify(data) });
   }
 
   new_obj.post = JSON.stringify(post_obj);
@@ -117,15 +139,24 @@ export const send_reminder_data = (new_data) => {
     var new_obj = template;
     new_obj.type = "send_reminder_data";
     if (response.length == 0) {
-      new_obj.post = JSON.stringify(
-      {data: [{date: new_data.date, reminder: new_data.reminder, minutes_before: new_data.minutes_before}], success:1}
-      );
+      new_obj.post = JSON.stringify({
+        data: [
+          {
+            date: new_data.date,
+            reminder: new_data.reminder,
+            minutes_before: new_data.minutes_before,
+            type: new_data.type,
+          },
+        ],
+        success: 1,
+      });
     } else {
       var post_obj = response;
       post_obj["data"].push({
         date: new_data.date,
         reminder: new_data.reminder,
         minutes_before: new_data.minutes_before,
+        type: new_data.type,
       });
       new_obj.post = JSON.stringify(post_obj);
     }
@@ -146,7 +177,6 @@ export const remove_reminder_data = (i) => {
     new_obj.post = JSON.stringify(post_obj);
 
     return http_post(login_url, new_obj).then((res) => {
-      console.log(res);
       return res;
     });
   });

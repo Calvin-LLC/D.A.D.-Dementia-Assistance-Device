@@ -42,7 +42,8 @@ import { Geolocation } from "@ionic-native/geolocation";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { base64FromPath } from "../componets/camera";
 import { callOutline, fastFoodOutline, peopleOutline } from "ionicons/icons";
-import { closeOutline, cameraOutline, addOutline } from "ionicons/icons";
+import { closeOutline, cameraOutline } from "ionicons/icons";
+import { InAppBrowser } from "@ionic-native/in-app-browser";
 
 const Tab3 = () => {
   const mounted_prop = useRef(true);
@@ -65,7 +66,6 @@ const Tab3 = () => {
   const [phone_carrier, set_phone_carrier] = useState(0);
   const [current_location, set_current_location] = useState();
   const [recognition, set_recognition] = useState(false);
-  const [kitchen_bonus, set_kitchen_bonus] = useState(0);
 
   const [kitchen_buttons, set_kitchen_buttons] = useState([
     "1",
@@ -97,6 +97,7 @@ const Tab3 = () => {
           hours: 1 * minimal_kitchen_text.substring(0, 2),
           minutes: 1 * minimal_kitchen_text.substring(2, 4),
           seconds: 1 * minimal_kitchen_text.substring(4, 6),
+          bonus: 0,
         });
         console.log("sent");
         return;
@@ -132,7 +133,7 @@ const Tab3 = () => {
   var parsed_data = new Array();
 
   // take a picture......
-  const take_picture = async () => {
+  /*const take_picture = async () => {
     const cameraPhoto = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
@@ -141,7 +142,7 @@ const Tab3 = () => {
     let base64 = await base64FromPath(cameraPhoto.webPath);
     send_picture(base64);
     set_recognition(true);
-  };
+  };*/
 
   // add reminder contact information
   const add_reminder_person = () => {
@@ -167,6 +168,7 @@ const Tab3 = () => {
         var response = res.data;
         var len = response.length;
         if (response == old_obj) return;
+        parsed_data = [];
         for (var i = 0; i < len; ++i) {
           parsed_data[i] = "~ " + response[i].contact;
         }
@@ -188,7 +190,7 @@ const Tab3 = () => {
     await send_geolocation(to_object(coords), true);
 
     var response = await get_geolocation();
-    
+
     set_current_location(response);
   };
 
@@ -202,6 +204,25 @@ const Tab3 = () => {
   const tablet_manager = async () => {
     set_tablet_mode(!tablet_mode);
     db_set("tablet_mode", !tablet_mode);
+  };
+
+  // browser settings, https://ionicframework.com/docs/v3/native/in-app-browser/
+  const browser_options = {
+    location: "no",
+    clearcache: "yes",
+    hideurlbar: "yes",
+    beforeload: "yes", // maybe works? i can't read so idk
+  };
+
+  // open browser view
+  const open_facial_recognition = async () => {
+    const browser = await InAppBrowser.create(
+      "https://google.com",
+      "_self",
+      browser_options
+    );
+
+    browser.close();
   };
 
   // checks to see if we are mounted in the render thread
@@ -437,7 +458,7 @@ const Tab3 = () => {
 
           <IonItem>
             <IonLabel>Image Recognition</IonLabel>
-            <IonButton id="picture_button" onClick={() => take_picture()}>
+            <IonButton id="picture_button" onClick={open_facial_recognition}>
               <IonIcon icon={cameraOutline}></IonIcon>
             </IonButton>
           </IonItem>

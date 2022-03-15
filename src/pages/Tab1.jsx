@@ -36,6 +36,9 @@ import { db_get, db_set } from "../componets/storage";
 
 import { settingsOutline } from "ionicons/icons";
 
+import { Map } from "../componets/maps";
+import { Pill_dispenser } from "../componets/pill_dispenser";
+
 const Tab1 = () => {
   const mounted_prop = useRef(true); // Initial value _isMounted = true
 
@@ -89,6 +92,7 @@ const Tab1 = () => {
       .then((response) => {
         var len = response.data.length;
         if (response.data == old_obj) return;
+        parsed_data = [];
 
         for (var i = 0; i < len; ++i) {
           parsed_data.push({ header: "", body: "" });
@@ -181,6 +185,9 @@ const Tab1 = () => {
     <IonPage>
       <IonContent fullscreen>
         <IonGrid className="centerandresize">
+          <Pill_dispenser />
+          <IonButton id="pill-trigger">Butt</IonButton>
+
           {weather_data && (
             <IonRow>
               <IonCol>
@@ -231,7 +238,8 @@ const Tab1 = () => {
                         />
                       </IonButton>
                     </IonCardContent>
-                    <IonImg src="https://ziadabdelati.com/google_maps.png"></IonImg>
+                    <Map />
+                    {/*<IonImg src="https://ziadabdelati.com/google_maps.png"></IonImg>*/}
                     <IonModal
                       backdropDismiss={true}
                       animated={true}

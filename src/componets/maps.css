@@ -1,0 +1,18 @@
+.heading {
+  margin: 0;
+  padding: 20px;
+  background-color: black;
+  color: white;
+}
+
+.map-wrap {
+  position: relative;
+  width: 100%;
+  height: calc(30vh - 77px);
+}
+
+.map {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}

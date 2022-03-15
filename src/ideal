@@ -2,22 +2,23 @@ login page:
 X remember me checkbox
 
 dashboard:
-- fix google map
+X fix google map (not google maps, not working on mobile but it's the best i can do ATM)
 X dont setcols when nothing same! 
 - settings icon for each item
+- pill dispenser settings icon barcode scanner!
 - make text scale with screen size
 
 reminders:
-- presets, row of cards
 X no reminders update when nothing update
 X set a user / both reminder
-- repetitive reminders
+X repetitive reminders
+X remove from reminder instantly (:trollface:)
 
 settings:
 X manage contacts page (same thing)
 1/2 X family page, (X family mode option, charts!!!!, allows changing of wander alarm, set home location confirmation, choose what reminder option you want (pass douglas, text: true, phone: true, email: true))
 X set wander alarm time to current wander start and stop times
-- facial recognition workz, shows description 
+1/2 X facial recognition workz, shows description (shows the webpage!)
 X make kitchen page not TRASH (add timer like calculator)
 X bonus value (key called bonus, in seconds)
 - recipe saver and browser on kitchen page

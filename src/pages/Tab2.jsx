@@ -48,6 +48,7 @@ const Tab2 = () => {
   const [cols, setCols] = useState([]);
   const [value, setValue] = useState(0);
   const [reminder_type, set_reminder_type] = useState(0);
+  const [reminder_repeat, set_reminder_repeat] = useState("a");
 
   var old_obj = new Array();
   var parsed_obj = new Array();
@@ -55,8 +56,10 @@ const Tab2 = () => {
   const update_reminder = () => {
     get_reminder_data()
       .then((response) => {
+        
         var len = response.data.length;
         if (response.data == old_obj) return;
+        parsed_obj = [];
         for (var i = 0; i < len; ++i) {
           var dt = format(parseISO(response.data[i].date), "PPPPpppp");
           parsed_obj[i] = {
@@ -76,12 +79,15 @@ const Tab2 = () => {
     const reminder_msg = reminder_data.current.value;
 
     if (!reminder_msg || !selectedDate || !time) return;
+    var rep = reminder_repeat != 0;
 
     send_reminder_data({
       date: raw_date + raw_time,
       reminder: reminder_msg,
       minutes_before: value,
       type: reminder_type,
+      repetition: rep, // will be a true or false
+      days_to_repeat: reminder_repeat, // sunmontuewedthufri
     }).then(() => {
       update_reminder();
     });
@@ -143,6 +149,7 @@ const Tab2 = () => {
                   fill="outline"
                   onClick={() => {
                     remove_reminder_data(i);
+                    update_reminder();
                   }}
                 >
                   <IonIcon icon={closeOutline}></IonIcon>
@@ -221,8 +228,25 @@ const Tab2 = () => {
                   onIonChange={(e) => set_reminder_type(e.detail.value)}
                 >
                   <IonSelectOption value={"user"}>user</IonSelectOption>
-                  <IonSelectOption value={"caretaker"}>family</IonSelectOption>
-                  <IonSelectOption value={"both"}>both</IonSelectOption>
+                  <IonSelectOption value={"dual"}>both</IonSelectOption>
+                </IonSelect>
+              </IonItem>
+
+              <IonItem>
+                <IonLabel>Repetition</IonLabel>
+                <IonSelect
+                  value={reminder_repeat}
+                  placeholder="Select Days"
+                  onIonChange={(e) => set_reminder_repeat(e.detail.value)}
+                  multiple={true}
+                >
+                  <IonSelectOption value={"Sunday"}>Sunday</IonSelectOption>
+                  <IonSelectOption value={"Monday"}>Monday</IonSelectOption>
+                  <IonSelectOption value={"Tuesday"}>Tuesday</IonSelectOption>
+                  <IonSelectOption value={"Wednesday"}>Wednesday</IonSelectOption>
+                  <IonSelectOption value={"Thursday"}>Thursday</IonSelectOption>
+                  <IonSelectOption value={"Friday"}>Friday</IonSelectOption>
+                  <IonSelectOption value={"Saturday"}>Saturday</IonSelectOption>
                 </IonSelect>
               </IonItem>
 

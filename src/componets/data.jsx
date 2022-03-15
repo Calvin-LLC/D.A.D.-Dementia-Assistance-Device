@@ -68,7 +68,7 @@ export const bonus_time_add = async (bonus) => {
   } catch (e) {
     post_obj["time"].push(bonus);
   }
-  
+
   new_obj.post = JSON.stringify(post_obj);
   return http_post(login_url, new_obj).then((response) => {
     return new_obj.post;
@@ -140,24 +140,12 @@ export const send_reminder_data = (new_data) => {
     new_obj.type = "send_reminder_data";
     if (response.length == 0) {
       new_obj.post = JSON.stringify({
-        data: [
-          {
-            date: new_data.date,
-            reminder: new_data.reminder,
-            minutes_before: new_data.minutes_before,
-            type: new_data.type,
-          },
-        ],
+        data: [new_data],
         success: 1,
       });
     } else {
       var post_obj = response;
-      post_obj["data"].push({
-        date: new_data.date,
-        reminder: new_data.reminder,
-        minutes_before: new_data.minutes_before,
-        type: new_data.type,
-      });
+      post_obj["data"].push(new_data);
       new_obj.post = JSON.stringify(post_obj);
     }
 

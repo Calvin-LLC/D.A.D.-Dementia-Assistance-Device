@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@awesome-cordova-plugins/barcode-scanner": "^5.40.0",
     "@awesome-cordova-plugins/calendar": "^5.37.3",
     "@awesome-cordova-plugins/geolocation": "^5.37.3",
     "@awesome-cordova-plugins/in-app-browser": "^5.40.0",
@@ -47,6 +48,7 @@
     "maplibre-gl": "^2.1.7",
     "mobiscroll": "^3.0.0-beta6",
     "moment": "^2.29.1",
+    "phonegap-plugin-barcodescanner": "^8.1.0",
     "pullstate": "^1.23.0",
     "react": "^17.0.2",
     "react-bootstrap": "^2.1.1",

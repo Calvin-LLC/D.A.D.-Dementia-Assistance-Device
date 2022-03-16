@@ -1,4 +1,5 @@
 import axios from "axios"; // ezpz web comm
+import { db_get, db_set } from "./storage";
 
 var login_url = "https://ziadabdelati.com/check.php";
 var template = {
@@ -75,6 +76,29 @@ export const bonus_time_add = async (bonus) => {
   });
 };
 
+// add barcode data
+export const barcode_add = async (barcode) => {
+  var data_from_server = await data_recieve();
+
+  if (!data_from_server.data) return;
+
+  var new_obj = template;
+  new_obj.type = "data_send";
+
+  var post_obj = data_from_server;
+
+  try {
+    post_obj["data"]["pill"].append(barcode);
+  } catch (e) {
+    post_obj["data"].push({ type: "pill", barcode });
+  }
+
+  new_obj.post = JSON.stringify(post_obj);
+  return http_post(login_url, new_obj).then((response) => {
+    return new_obj.post;
+  });
+};
+
 // add data to the server
 export const wander_data_add = async (data) => {
   const data_from_server = await data_recieve();
@@ -131,6 +155,41 @@ export const get_reminder_data = () => {
   return http_post(login_url, new_obj).then((response) => {
     return response;
   });
+};
+
+// get facial recognition data with pictures, stores the images aswell to decrease loading times
+export const get_recognition_data = async () => {
+  var new_obj = template;
+  new_obj.type = "get_recognition_data";
+  
+  var response = await http_post(login_url, new_obj);
+  db_set("recognition_data", response);
+};
+
+// add facial recognition data
+export const add_facial_recognition_data = async (data) => {
+  var new_obj = template;
+  new_obj.type = "add_recognition_data";
+
+  var cached_data = db_get("recognition_data");
+  if (!cached_data) {
+    await get_recognition_data();
+    cached_data = db_get("recognition_data");
+  }
+
+  var post_obj = cached_data;
+
+  try {
+    post_obj["data"].append(data);
+  } catch (e) {
+    post_obj = { data: [data] };
+  }
+
+  new_obj.post = JSON.stringify(post_obj);
+
+  return http_post(login_url, new_obj).then((response) => {
+    console.log(response);
+  })
 };
 
 // automatically retrieves reminder data, adds the new data, then sends new one to server

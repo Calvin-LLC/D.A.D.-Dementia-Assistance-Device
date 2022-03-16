@@ -1,12 +1,15 @@
+all:
+X add exit button for every modal
+- add toast for every item (make a lib to show it?!?!? will take less time fo' sho')
+
 login page:
 X remember me checkbox
 
 dashboard:
 X fix google map (not google maps, not working on mobile but it's the best i can do ATM)
 X dont setcols when nothing same! 
-- settings icon for each item
-- pill dispenser settings icon barcode scanner!
-- make text scale with screen size
+X settings icon for each item
+X pill dispenser settings icon barcode scanner!
 
 reminders:
 X no reminders update when nothing update
@@ -15,10 +18,16 @@ X repetitive reminders
 X remove from reminder instantly (:trollface:)
 
 settings:
-X manage contacts page (same thing)
-1/2 X family page, (X family mode option, charts!!!!, allows changing of wander alarm, set home location confirmation, choose what reminder option you want (pass douglas, text: true, phone: true, email: true))
+1/2 X manage contacts page (same thing, choose what reminder option you want (pass douglas, text: true, phone: true, email: true))
+X family page, (X family mode option, charts!!!!, allows changing of wander alarm, set home location confirmation)
 X set wander alarm time to current wander start and stop times
 1/2 X facial recognition workz, shows description (shows the webpage!)
 X make kitchen page not TRASH (add timer like calculator)
 X bonus value (key called bonus, in seconds)
 - recipe saver and browser on kitchen page
+
+list of achievements:
+X ghostbuster
+X solved teleportation
+X made toast (chef?!)
+X X marks the spot (modal closing)

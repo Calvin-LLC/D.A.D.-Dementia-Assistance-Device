@@ -23,7 +23,7 @@ export const Map = (location) => {
       map.current.addControl(new maplibregl.NavigationControl(), "top-right");
       console.log(location_obj);
       new maplibregl.Marker({ color: "#FF0000" })
-        .setLngLat([location_obj.longitude - .00001, location_obj.latitude])
+        .setLngLat([location_obj.longitude , location_obj.latitude])
         .addTo(map.current);
     });
   }, []);

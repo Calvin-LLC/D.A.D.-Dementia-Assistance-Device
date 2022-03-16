@@ -19,6 +19,9 @@ import {
   IonToolbar,
   IonHeader,
   IonIcon,
+  IonList,
+  IonButtons,
+  IonBackButton,
 } from "@ionic/react";
 
 import { useState, useEffect, useRef } from "react";
@@ -29,15 +32,15 @@ import {
   to_object,
   get_geolocation,
   wander_data_add,
+  barcode_add,
 } from "../componets/data";
 import { Geolocation } from "@ionic-native/geolocation";
 import "./Tab1.css";
 import { db_get, db_set } from "../componets/storage";
-
-import { settingsOutline } from "ionicons/icons";
+import { BarcodeScanner } from "@awesome-cordova-plugins/barcode-scanner";
+import { barcodeOutline, closeOutline, settingsOutline } from "ionicons/icons";
 
 import { Map } from "../componets/maps";
-import { Pill_dispenser } from "../componets/pill_dispenser";
 
 const Tab1 = () => {
   const mounted_prop = useRef(true); // Initial value _isMounted = true
@@ -56,8 +59,10 @@ const Tab1 = () => {
 
   const [tracker, set_tracker] = useState();
   const [weather_data, set_weather_data] = useState();
-  const [wander_start_time, set_wander_start_time] = useState();
-  const [wander_end_time, set_wander_end_time] = useState();
+  const [pill_modal, set_pill_modal] = useState(false);
+  const [bathtub_modal, set_bathtub_modal] = useState(false);
+
+  const [barcode, set_barcode] = useState("Barcode: ");
 
   var weather_url =
     "https://api.weatherapi.com/v1/current.json?key=7640a167775a47be9a842820212111&q=";
@@ -111,6 +116,14 @@ const Tab1 = () => {
               parsed_data[i].header = response.data[i].type;
               parsed_data[i].body = Math.round(response.data[i].value) + "℉";
               break;
+            case "pill":
+              parsed_data[i].header = response.data[i].type;
+              parsed_data[i].body = response.data[i].value;
+              break;
+            case "bathtub":
+              parsed_data[i].header = response.data[i].type;
+              parsed_data[i].body = response.data[i].value;
+              break;
             default:
               parsed_data[i].header = response.data[i].type;
               parsed_data[i].body = response.data[i].value;
@@ -138,16 +151,11 @@ const Tab1 = () => {
     set_tracker(location_obj.current);
   };
 
-  const wander_time = async () => {
-    var wander = {
-      wander_start: wander_start_time.substring(11, wander_start_time.length),
-      wander_end: wander_end_time.substring(11, wander_start_time.length),
-    };
-    wander_data_add(wander);
-    db_set("wander_obj", {
-      wander_start: wander_start_time,
-      wander_end: wander_end_time,
-    });
+  const scan_barcode = async () => {
+    const barcode_data = await BarcodeScanner.scan();
+    console.log(barcode_data.text);
+    set_barcode("barcode: " + barcode_data.text);
+    barcode_add({barcode: barcode_data.text});
   };
 
   var weather_isupdated = false;
@@ -173,20 +181,83 @@ const Tab1 = () => {
     db_get("dashboard_obj").then((res) => {
       if (res) setCols(res);
     });
-    db_get("wander_obj").then((rr) => {
-      if (rr) {
-        set_wander_start_time(rr.wander_start);
-        set_wander_end_time(rr.wander_end);
-      }
-    });
   }, []);
 
   return (
     <IonPage>
       <IonContent fullscreen>
         <IonGrid className="centerandresize">
-          <Pill_dispenser />
-          <IonButton id="pill-trigger">Butt</IonButton>
+          {/*<IonButton id="pill-trigger">Butt</IonButton>*/}
+
+          <IonModal
+            isOpen={pill_modal}
+            backdropDismiss={true}
+            animated={true}
+            swipeToClose={true}
+          >
+            <IonHeader>
+              <IonToolbar color="primary" className="title-th">
+                <center>
+                  <IonTitle>Pill Dispenser</IonTitle>
+                </center>
+                <IonButtons slot="end">
+                  <IonButton
+                    onClick={() => {
+                      set_pill_modal(false);
+                    }}
+                  >
+                    <IonIcon icon={closeOutline}></IonIcon>
+                  </IonButton>
+                </IonButtons>
+              </IonToolbar>
+            </IonHeader>
+
+            <IonList>
+              <IonItem>
+                <IonText>{barcode}</IonText>
+              </IonItem>
+              <IonItem>
+                <IonLabel>Barcode Scanner</IonLabel>
+                <IonButton
+                  onClick={() => {
+                    scan_barcode();
+                  }}
+                >
+                  <IonIcon
+                    slot="icon-only"
+                    size="small"
+                    icon={barcodeOutline}
+                  />
+                </IonButton>
+              </IonItem>
+            </IonList>
+          </IonModal>
+
+          <IonModal
+            backdropDismiss={true}
+            animated={true}
+            swipeToClose={true}
+            isOpen={bathtub_modal}
+          >
+            <IonHeader>
+              <IonToolbar color="primary" className="title-th">
+                <center>
+                  <IonTitle>Bathtub</IonTitle>
+                </center>
+                <IonButtons slot="end">
+                  <IonButton
+                    onClick={() => {
+                      set_bathtub_modal(false);
+                    }}
+                  >
+                    <IonIcon icon={closeOutline}></IonIcon>
+                  </IonButton>
+                </IonButtons>
+              </IonToolbar>
+            </IonHeader>
+
+            <IonList></IonList>
+          </IonModal>
 
           {weather_data && (
             <IonRow>
@@ -201,6 +272,7 @@ const Tab1 = () => {
                       </IonCardTitle>
                     </IonCardHeader>
                   </IonCardHeader>
+
                   <IonCardContent className="weathergrid">
                     <IonText color="dark">
                       {"Condition: " + weather_data.current.condition.text}
@@ -218,6 +290,7 @@ const Tab1 = () => {
               </IonCol>
             </IonRow>
           )}
+
           {tracker && (
             <IonRow>
               <IonCol>
@@ -229,64 +302,16 @@ const Tab1 = () => {
                           {"lat: " + tracker.latitude} <br />
                           {"long: " + tracker.longitude}
                         </b>
-                      </h3>
-                      <IonButton id="trigger-button" className="griditem">
-                        <IonIcon
-                          slot="icon-only"
-                          size="small"
-                          icon={settingsOutline}
-                        />
-                      </IonButton>
+                      </h3>  
                     </IonCardContent>
                     <Map />
                     {/*<IonImg src="https://ziadabdelati.com/google_maps.png"></IonImg>*/}
-                    <IonModal
-                      backdropDismiss={true}
-                      animated={true}
-                      swipeToClose={true}
-                      trigger="trigger-button"
-                    >
-                      <IonHeader>
-                        <IonToolbar color="primary" className="title-th">
-                          <IonTitle>Location Data</IonTitle>
-                        </IonToolbar>
-                      </IonHeader>
-                      <IonItem>
-                        <IonLabel>Start Time</IonLabel>
-                        <IonDatetime
-                          slot="end"
-                          value={wander_start_time}
-                          onIonChange={(e) =>
-                            set_wander_start_time(e.detail.value)
-                          }
-                          label="start time"
-                          presentation="time"
-                        ></IonDatetime>
-                      </IonItem>
-                      <IonItem>
-                        <IonLabel>End Time</IonLabel>
-                        <IonDatetime
-                          slot="end"
-                          value={wander_end_time}
-                          onIonChange={(e) =>
-                            set_wander_end_time(e.detail.value)
-                          }
-                          label="end time"
-                          presentation="time"
-                        ></IonDatetime>
-                      </IonItem>
-                      <IonItem>
-                        <IonTitle>Wander Alarm</IonTitle>
-                        <IonButton onClick={() => wander_time()}>
-                          Save wander alarm times!
-                        </IonButton>
-                      </IonItem>
-                    </IonModal>
                   </IonCardHeader>
                 </IonCard>
               </IonCol>
             </IonRow>
           )}
+
           <IonRow>
             {cols.map((col, i) => (
               <IonCol size="6" key={"col" + i + 1}>
@@ -298,7 +323,35 @@ const Tab1 = () => {
                       key={col.header + "header" + i + 1}
                     >
                       {col.header}
+                      {col.header == "pill" && (
+                        <IonButton
+                          onClick={() => {
+                            set_pill_modal(true);
+                          }}
+                        >
+                          <IonIcon
+                            slot="icon-only"
+                            size="small"
+                            icon={settingsOutline}
+                          />
+                        </IonButton>
+                      )}
+
+                      {col.header == "bathtub" && (
+                        <IonButton
+                          onClick={() => {
+                            set_bathtub_modal(true);
+                          }}
+                        >
+                          <IonIcon
+                            slot="icon-only"
+                            size="small"
+                            icon={settingsOutline}
+                          />
+                        </IonButton>
+                      )}
                     </IonCardHeader>
+
                     <IonCardContent
                       className="bigone modgrid"
                       color="dark"

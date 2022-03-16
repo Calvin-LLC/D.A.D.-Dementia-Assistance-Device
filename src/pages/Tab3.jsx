@@ -22,6 +22,9 @@ import {
   IonCol,
   IonAlert,
   IonText,
+  IonDatetime,
+  IonButtons,
+  IonItemDivider,
 } from "@ionic/react";
 import "./Tab3.css";
 import { useEffect, useRef, useState } from "react";
@@ -36,12 +39,20 @@ import {
   data_recieve,
   kitchen_data_add,
   bonus_time_add,
+  wander_data_add,
+  add_facial_recognition_data,
 } from "../componets/data";
 import { db_set, db_get } from "../componets/storage";
 import { Geolocation } from "@ionic-native/geolocation";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { base64FromPath } from "../componets/camera";
-import { callOutline, fastFoodOutline, peopleOutline } from "ionicons/icons";
+import {
+  callOutline,
+  fastFoodOutline,
+  imagesOutline,
+  peopleOutline,
+  settingsOutline,
+} from "ionicons/icons";
 import { closeOutline, cameraOutline } from "ionicons/icons";
 import { InAppBrowser } from "@ionic-native/in-app-browser";
 
@@ -55,6 +66,8 @@ const Tab3 = () => {
   }, []);
 
   const reminder_data = useRef(null);
+  const name = useRef(null);
+  const description = useRef(null);
 
   // states
   const [cols, setCols] = useState([]);
@@ -66,6 +79,13 @@ const Tab3 = () => {
   const [phone_carrier, set_phone_carrier] = useState(0);
   const [current_location, set_current_location] = useState();
   const [recognition, set_recognition] = useState(false);
+  const [wander_start_time, set_wander_start_time] = useState();
+  const [wander_end_time, set_wander_end_time] = useState();
+  const [kitchen_trigger, set_kitchen_trigger] = useState(false);
+  const [family_trigger, set_family_trigger] = useState(false);
+  const [contact_trigger, set_contact_trigger] = useState(false);
+  const [recognition_trigger, set_recognition_trigger] = useState(false);
+  const [recognition_options, set_recognition_options] = useState(false);
 
   const [kitchen_buttons, set_kitchen_buttons] = useState([
     "1",
@@ -131,18 +151,36 @@ const Tab3 = () => {
 
   var old_obj = new Array();
   var parsed_data = new Array();
+  var current_picture;
 
   // take a picture......
-  /*const take_picture = async () => {
+  const take_picture = async () => {
     const cameraPhoto = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
       quality: 100,
     });
     let base64 = await base64FromPath(cameraPhoto.webPath);
-    send_picture(base64);
-    set_recognition(true);
-  };*/
+    current_picture = base64;
+  };
+
+  // add person to recognized people list
+  const send_recognition = async () => {
+    var person_name = name.current.value;
+    var person_description = description.current.value;
+
+    if (!person_name || !person_description || !current_picture) {
+      // error handling
+      return;
+    }
+
+    await add_facial_recognition_data({
+      name: person_name,
+      description: person_description,
+      image: current_picture,
+    });
+    console.log("added facial recognition data!");
+  };
 
   // add reminder contact information
   const add_reminder_person = () => {
@@ -225,6 +263,19 @@ const Tab3 = () => {
     browser.close();
   };
 
+  // sets current wander time
+  const wander_time = async () => {
+    var wander = {
+      wander_start: wander_start_time.substring(11, wander_start_time.length),
+      wander_end: wander_end_time.substring(11, wander_start_time.length),
+    };
+    wander_data_add(wander);
+    db_set("wander_obj", {
+      wander_start: wander_start_time,
+      wander_end: wander_end_time,
+    });
+  };
+
   // checks to see if we are mounted in the render thread
   useEffect(() => {
     setInterval(() => {
@@ -244,6 +295,12 @@ const Tab3 = () => {
     });
     db_get("tablet_mode").then((response) => {
       if (response != null) set_tablet_mode(response);
+    });
+    db_get("wander_obj").then((rr) => {
+      if (rr) {
+        set_wander_start_time(rr.wander_start);
+        set_wander_end_time(rr.wander_end);
+      }
     });
     update_kitchen(); // update kitchen once
   }, []);
@@ -309,7 +366,11 @@ const Tab3 = () => {
 
           <IonItem>
             <IonLabel>Contact Page</IonLabel>
-            <IonButton id="contact-trigger">
+            <IonButton
+              onClick={() => {
+                set_contact_trigger(true);
+              }}
+            >
               <IonIcon slot="icon-only" size="small" icon={callOutline} />
             </IonButton>
 
@@ -317,13 +378,22 @@ const Tab3 = () => {
               backdropDismiss={true}
               animated={true}
               swipeToClose={true}
-              trigger="contact-trigger"
+              isOpen={contact_trigger}
             >
               <IonHeader>
                 <IonToolbar color="primary" className="title-th">
                   <center>
                     <IonTitle>Contacts</IonTitle>
                   </center>
+                  <IonButtons slot="end">
+                    <IonButton
+                      onClick={() => {
+                        set_contact_trigger(false);
+                      }}
+                    >
+                      <IonIcon icon={closeOutline}></IonIcon>
+                    </IonButton>
+                  </IonButtons>
                 </IonToolbar>
               </IonHeader>
 
@@ -405,7 +475,11 @@ const Tab3 = () => {
 
           <IonItem>
             <IonLabel>Family Page</IonLabel>
-            <IonButton id="family-trigger">
+            <IonButton
+              onClick={() => {
+                set_family_trigger(true);
+              }}
+            >
               <IonIcon slot="icon-only" size="small" icon={peopleOutline} />
             </IonButton>
 
@@ -413,13 +487,22 @@ const Tab3 = () => {
               backdropDismiss={true}
               animated={true}
               swipeToClose={true}
-              trigger="family-trigger"
+              isOpen={family_trigger}
             >
               <IonHeader>
                 <IonToolbar color="primary" className="title-th">
                   <center>
-                    <IonTitle>Kitchen Info</IonTitle>
+                    <IonTitle>Family Page</IonTitle>
                   </center>
+                  <IonButtons slot="end">
+                    <IonButton
+                      onClick={() => {
+                        set_family_trigger(false);
+                      }}
+                    >
+                      <IonIcon icon={closeOutline}></IonIcon>
+                    </IonButton>
+                  </IonButtons>
                 </IonToolbar>
               </IonHeader>
 
@@ -452,33 +535,73 @@ const Tab3 = () => {
                     </IonButton>
                   </IonItem>
                 )}
+                {family_mode && (
+                  <div>
+                    <IonItem>
+                      <IonLabel>Start Time</IonLabel>
+                      <IonDatetime
+                        slot="end"
+                        value={wander_start_time}
+                        onIonChange={(e) =>
+                          set_wander_start_time(e.detail.value)
+                        }
+                        label="start time"
+                        presentation="time"
+                      ></IonDatetime>
+                    </IonItem>
+
+                    <IonItem>
+                      <IonLabel>End Time</IonLabel>
+                      <IonDatetime
+                        slot="end"
+                        value={wander_end_time}
+                        onIonChange={(e) => set_wander_end_time(e.detail.value)}
+                        label="end time"
+                        presentation="time"
+                      ></IonDatetime>
+                    </IonItem>
+
+                    <IonItem>
+                      <IonTitle>Wander Alarm</IonTitle>
+                      <IonButton onClick={() => wander_time()}>
+                        Save wander alarm times!
+                      </IonButton>
+                    </IonItem>
+                  </div>
+                )}
               </IonList>
             </IonModal>
           </IonItem>
 
           <IonItem>
-            <IonLabel>Image Recognition</IonLabel>
-            <IonButton id="picture_button" onClick={open_facial_recognition}>
-              <IonIcon icon={cameraOutline}></IonIcon>
-            </IonButton>
-          </IonItem>
-
-          <IonItem>
             <IonLabel>Kitchen Page</IonLabel>
-            <IonButton id="kitchen-trigger">
+            <IonButton
+              onClick={() => {
+                set_kitchen_trigger(true);
+              }}
+            >
               <IonIcon slot="icon-only" size="small" icon={fastFoodOutline} />
             </IonButton>
             <IonModal
               backdropDismiss={true}
               animated={true}
               swipeToClose={true}
-              trigger="kitchen-trigger"
+              isOpen={kitchen_trigger}
             >
               <IonHeader>
                 <IonToolbar color="primary" className="title-th">
                   <center>
                     <IonTitle>Kitchen Info</IonTitle>
                   </center>
+                  <IonButtons slot="end">
+                    <IonButton
+                      onClick={() => {
+                        set_kitchen_trigger(false);
+                      }}
+                    >
+                      <IonIcon icon={closeOutline}></IonIcon>
+                    </IonButton>
+                  </IonButtons>
                 </IonToolbar>
               </IonHeader>
 
@@ -509,6 +632,95 @@ const Tab3 = () => {
                   <IonButton onClick={bonus_button}>+1 Minute</IonButton>
                 </IonRow>
               </IonGrid>
+            </IonModal>
+          </IonItem>
+
+          <IonItem>
+            <IonLabel>Facial Recognition Page</IonLabel>
+            <IonButton
+              onClick={() => {
+                set_recognition_trigger(true);
+              }}
+            >
+              <IonIcon slot="icon-only" size="small" icon={imagesOutline} />
+            </IonButton>
+
+            <IonModal
+              backdropDismiss={true}
+              animated={true}
+              swipeToClose={true}
+              isOpen={recognition_trigger}
+            >
+              <IonHeader>
+                <IonToolbar color="primary" className="title-th">
+                  <center>
+                    <IonTitle>Facial Recognition</IonTitle>
+                  </center>
+                  <IonButtons slot="end">
+                    <IonButton
+                      onClick={() => {
+                        set_recognition_trigger(false);
+                      }}
+                    >
+                      <IonIcon icon={closeOutline}></IonIcon>
+                    </IonButton>
+                  </IonButtons>
+                </IonToolbar>
+              </IonHeader>
+
+              <IonList>
+                <IonItem>
+                  <IonLabel>Live Image Recognition</IonLabel>
+                  <IonButton onClick={open_facial_recognition}>
+                    <IonIcon icon={cameraOutline}></IonIcon>
+                  </IonButton>
+                </IonItem>
+
+                <IonItem
+                  onClick={() => {
+                    set_recognition_options(!recognition_options);
+                  }}
+                >
+                  <IonText>
+                    <b>Add a new person to recognized list</b>
+                  </IonText>
+                </IonItem>
+
+                {recognition_options && (
+                  <div>
+                    <IonItem>
+                      <IonLabel position="floating">Name</IonLabel>
+                      <IonInput
+                        type="email"
+                        placeholder="Name"
+                        ref={name}
+                      ></IonInput>
+                    </IonItem>
+
+                    <IonItem>
+                      <IonLabel position="floating">Description</IonLabel>
+                      <IonInput
+                        type="email"
+                        placeholder="Description"
+                        ref={description}
+                      ></IonInput>
+                    </IonItem>
+
+                    <IonItem>
+                      <IonLabel>Take picture!</IonLabel>
+                      <IonButton onClick={take_picture}>
+                        <IonIcon icon={cameraOutline}></IonIcon>
+                      </IonButton>
+                    </IonItem>
+
+                    <center>
+                      <IonButton onClick={send_recognition}>
+                        Add person to recognized list
+                      </IonButton>
+                    </center>
+                  </div>
+                )}
+              </IonList>
             </IonModal>
           </IonItem>
         </IonList>

@@ -160,7 +160,7 @@ const Login = (props) => {
       <IonHeader>
         <IonToolbar color="primary" className="title-th">
           <center>
-            <IonTitle>Dimentia Assistance Device</IonTitle>
+            <IonTitle>Dementia Assistance Device</IonTitle>
           </center>
         </IonToolbar>
       </IonHeader>

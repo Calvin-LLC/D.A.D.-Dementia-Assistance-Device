@@ -157,6 +157,24 @@ export const get_reminder_data = () => {
   });
 };
 
+// sets notification type
+export const set_notification = async (data) => {
+  var new_obj = template;
+  new_obj.type = "send_reminder_data";
+
+  var post_obj = await get_reminder_data();
+  try {
+    post_obj["data"]["reminder_type"] = data;
+  } catch(e) {
+    post_obj["data"].push({reminder_type: data});
+  }
+  new_obj.post = JSON.stringify(post_obj);
+
+  return http_post(login_url, new_obj).then((res) => {
+    return res;
+  });
+}
+
 // get facial recognition data with pictures, stores the images aswell to decrease loading times
 export const get_recognition_data = async () => {
   var new_obj = template;

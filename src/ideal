@@ -6,8 +6,8 @@ login page:
 X remember me checkbox
 
 dashboard:
-X fix google map (not google maps, not working on mobile but it's the best i can do ATM)
-X dont setcols when nothing same! 
+X fix google map (not google maps, not working on mobile but it's the best I can do ATM)
+X don't setcols when nothing same! 
 X settings icon for each item
 X pill dispenser settings icon barcode scanner!
 
@@ -16,18 +16,26 @@ X no reminders update when nothing update
 X set a user / both reminder
 X repetitive reminders
 X remove from reminder instantly (:trollface:)
+- can't start reminders in the past, set starting pos to current day
 
 settings:
-1/2 X manage contacts page (same thing, choose what reminder option you want (pass douglas, text: true, phone: true, email: true))
+X manage contacts page (same thing, choose what reminder option you want (pass Douglas, text: true, phone: true, email: true))
 X family page, (X family mode option, charts!!!!, allows changing of wander alarm, set home location confirmation)
 X set wander alarm time to current wander start and stop times
-1/2 X facial recognition workz, shows description (shows the webpage!)
+1/2 X facial recognition works, shows description (shows the webpage!)
 X make kitchen page not TRASH (add timer like calculator)
 X bonus value (key called bonus, in seconds)
 - recipe saver and browser on kitchen page
 
 list of achievements:
-X ghostbuster
+X ghost-buster
 X solved teleportation
 X made toast (chef?!)
 X X marks the spot (modal closing)
+X became an teacher
+
+
+todo:
+- Ziad makes kitchen_recipe column
+X server-side done ($type == "get_kitchen_recipe" || $type == "add_kitchen_recipe")
+- app done

@@ -41,6 +41,7 @@ import {
   bonus_time_add,
   wander_data_add,
   add_facial_recognition_data,
+  set_notification,
 } from "../componets/data";
 import { db_set, db_get } from "../componets/storage";
 import { Geolocation } from "@ionic-native/geolocation";
@@ -86,6 +87,7 @@ const Tab3 = () => {
   const [contact_trigger, set_contact_trigger] = useState(false);
   const [recognition_trigger, set_recognition_trigger] = useState(false);
   const [recognition_options, set_recognition_options] = useState(false);
+  const [notification_type, set_notification_type] = useState(0);
 
   const [kitchen_buttons, set_kitchen_buttons] = useState([
     "1",
@@ -276,6 +278,15 @@ const Tab3 = () => {
     });
   };
 
+  // set notifications that the user wants
+  const notification_add = async (notification_types) => {
+    // updates the actual value displayed
+    set_notification_type(notification_types);
+
+    // add to server now
+    set_notification(notification_types);
+  }
+
   // checks to see if we are mounted in the render thread
   useEffect(() => {
     setInterval(() => {
@@ -365,7 +376,7 @@ const Tab3 = () => {
           </IonItem>
 
           <IonItem>
-            <IonLabel>Contact Page</IonLabel>
+            <IonLabel>Contact & Reminders Page</IonLabel>
             <IonButton
               onClick={() => {
                 set_contact_trigger(true);
@@ -468,6 +479,20 @@ const Tab3 = () => {
                   <IonButton onClick={add_reminder_person}>
                     Add Contact
                   </IonButton>
+                </IonItem>
+
+                <IonItem>
+                  <IonLabel>Notification Type</IonLabel>
+                  <IonSelect
+                    value={notification_type}
+                    placeholder="Notifications"
+                    onIonChange={(e) => notification_add(e.detail.value)}
+                    multiple={true}
+                  >
+                    <IonSelectOption value={"email"}>email</IonSelectOption>
+                    <IonSelectOption value={"text"}>text</IonSelectOption>
+                    <IonSelectOption value={"call"}>text</IonSelectOption>
+                  </IonSelect>
                 </IonItem>
               </IonList>
             </IonModal>
@@ -682,7 +707,11 @@ const Tab3 = () => {
                   }}
                 >
                   <IonText>
-                    <b>Add a new person to recognized list</b>
+                    <b>
+                      {!recognition_options && "> "}
+                      {recognition_options && "v "}Add a new person to
+                      recognized list
+                    </b>
                   </IonText>
                 </IonItem>
 

@@ -1,4 +1,4 @@
-# solve-for-tomorrow-2
+# Thesis App
 - Mobile app intended for android use for our project
 - Uses Ionic with capacitor to build onto android (ios not setup)
 - Originally created for the samsung solve for tomorrow event

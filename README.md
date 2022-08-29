@@ -1,12 +1,17 @@
 # Thesis App
-- Mobile app intended for android use for our project
+- Mobile app intended for android use for our high-school senior thesis
 - Uses Ionic with capacitor to build onto android (ios not setup)
-- Originally created for the samsung solve for tomorrow event
+- Won State level in the Samsung Solve for Tomorrow event, winning $6,500 for our school
+- Youtube video that showcases each item of the smart-home, and what we submitted for the project: 
+[![Smart Home Video](https://img.youtube.com/vi/NEFJ0SKq-_A/0.jpg)](https://www.youtube.com/watch?v=NEFJ0SKq-_A)
+
+- Parts not shown in the repo:
+- each module's code
+- server-side code
 
 pages:
 - Fully featured login page that interacts with php api (not in repo)
   <br><img src="https://www.senior.calvinllc.net/img/login.JPG" width="260"/>
-
 - Caching of all information (including login)
 - Dashboard that has map widget, weather information, and status of all smart home modules
   <br><img src="https://www.senior.calvinllc.net/img/dashboard.JPG" width="260"/>

@@ -101,7 +101,7 @@
     ]
   },
   "devDependencies": {
-    "@capacitor/cli": "^3.3.2",
+    "@capacitor/cli": "^5.4.0",
     "react-scripts": "5.0.0"
   },
   "description": "Samsung Solve For Tomorrow"
